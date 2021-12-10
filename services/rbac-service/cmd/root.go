@@ -8,7 +8,7 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-
+	rootCmd.AddCommand(migrationCmd)
 }
 
 func Execute() error {
