@@ -1,6 +1,6 @@
 
 -- +migrate Up
-CREATE TABLE IF NOT EXISTS role_permissoins (
+CREATE TABLE IF NOT EXISTS role_permissions (
     role_id INTEGER NOT NULL ,
     permission_id INTEGER NOT NULL ,
     created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ,
