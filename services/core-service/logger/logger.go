@@ -2,10 +2,8 @@ package logger
 
 import (
 	"fmt"
-	"os"
-	"strings"
-
 	"github.com/rs/zerolog"
+	"os"
 )
 
 // Logger -.
@@ -55,21 +53,21 @@ const (
 
 // LevelNames provides mapping for log levels
 var LevelNames = map[Level]string{
-	ERROR:    "ERROR",
-	WARNING:  "WARNING",
-	NOTICE:   "NOTICE",
-	INFO:     "INFO",
-	DEBUG:    "DEBUG",
+	ERROR:   "ERROR",
+	WARNING: "WARNING",
+	NOTICE:  "NOTICE",
+	INFO:    "INFO",
+	DEBUG:   "DEBUG",
 }
 
-var ZeroLogLevelToAppLogLevel = map[Level]zerolog.Level {
-	ERROR: zerolog.ErrorLevel,
+var ZeroLogLevelToAppLogLevel = map[Level]zerolog.Level{
+	ERROR:   zerolog.ErrorLevel,
 	WARNING: zerolog.WarnLevel,
-	INFO: zerolog.InfoLevel,
-	DEBUG: zerolog.DebugLevel,
+	INFO:    zerolog.InfoLevel,
+	DEBUG:   zerolog.DebugLevel,
 }
 
-func NewLogger(level Level) *logger  {
+func NewLogger(level Level) *logger {
 	l := ZeroLogLevelToAppLogLevel[level]
 	zerolog.SetGlobalLevel(l)
 	log := zerolog.New(os.Stdout).With().Timestamp().Logger()
@@ -79,36 +77,18 @@ func NewLogger(level Level) *logger  {
 	}
 }
 
+func (l *logger) WithHook(hookHdl zerolog.Hook) {
+	if hookHdl == nil {
+		return
+	}
+	log := l.logger.Hook(hookHdl)
+	l.logger = &log
+}
+
 func NewDefaultLogger() *logger {
 	l := ZeroLogLevelToAppLogLevel[DefaultLevel]
 	zerolog.SetGlobalLevel(l)
 	log := zerolog.New(StdoutHandler).With().Timestamp().Logger()
-
-	return &logger{
-		logger: &log,
-	}
-
-}
-
-// New -.
-func new(level string) *logger {
-	var l zerolog.Level
-
-	switch strings.ToLower(level) {
-	case "error":
-		l = zerolog.ErrorLevel
-	case "warn":
-		l = zerolog.WarnLevel
-	case "info":
-		l = zerolog.InfoLevel
-	case "debug":
-		l = zerolog.DebugLevel
-	default:
-		l = zerolog.InfoLevel
-	}
-
-	zerolog.SetGlobalLevel(l)
-	log := zerolog.New(os.Stdout).With().Timestamp().Logger()
 
 	return &logger{
 		logger: &log,
@@ -164,4 +144,3 @@ func (l *logger) msg(level string, message interface{}, args ...interface{}) {
 		l.log(fmt.Sprintf("%s message %v has unknown type %v", level, message, msg), args...)
 	}
 }
-

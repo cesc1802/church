@@ -8,10 +8,3 @@ func SliceStringToString(sliceVal []string, sep string) string {
 	}
 	return strings.Join(sliceVal, sep)
 }
-
-func BoolToBoolString(value bool) string {
-	if value {
-		return "true"
-	}
-	return "false"
-}
