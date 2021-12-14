@@ -2,6 +2,8 @@ package cmd
 
 import "github.com/spf13/cobra"
 
+const dialect = "postgres"
+
 var rootCmd = &cobra.Command{
 	Use:   "rbac-service",
 	Short: "run rbac-service as cli program",
@@ -9,6 +11,7 @@ var rootCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(migrationCmd)
+	rootCmd.AddCommand(serverCmd)
 }
 
 func Execute() error {

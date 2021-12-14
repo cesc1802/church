@@ -72,7 +72,7 @@ var migrateDown = &cobra.Command{
 		conn, err := dbGorm.DB()
 		mustErr(err)
 
-		applyNum, err := migrate.Exec(conn, "postgres", migrations, migrate.Down)
+		applyNum, err := migrate.Exec(conn, dialect, migrations, migrate.Down)
 		mustErr(err)
 
 		logger.Info("Apply number migration %d", applyNum)
