@@ -21,6 +21,11 @@ func Recovery(i18n *i18n.I18n) gin.HandlerFunc {
 					return
 				}
 
+				if appErr, ok := err.(*app_error.AppError); ok {
+					c.AbortWithStatusJSON(appErr.StatusCode, app_error.HandleAppError(language, i18n, appErr))
+					return
+				}
+
 				appErr := app_error.ErrInternal(err.(error))
 				c.AbortWithStatusJSON(appErr.StatusCode, appErr)
 				panic(err)

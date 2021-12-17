@@ -23,10 +23,17 @@ func translateToAppVE(i18n *i18n.I18n, lang string,
 func HandleValidationErrors(language string, i18n *i18n.I18n, valErrors validator.ValidationErrors) *AppError {
 	appErr := ValidationError(
 		i18n.MustLocalize(language, COM0005, nil),
-		"ErrValidation",
+		"ERR_VALIDATION_REQUEST",
 		translateToAppVE(i18n, language, valErrors, COM0005),
 	)
 	return appErr
+}
+
+func HandleAppError(language string, i18n *i18n.I18n, err error) *AppError {
+	appErr := err.(*AppError)
+	appErr.Message = i18n.MustLocalize(language, appErr.ErrorKey, nil)
+	return appErr
+
 }
 
 func MustError(err error) {

@@ -14,10 +14,9 @@ import (
 	"services.core-service/i18n"
 	"services.core-service/logger"
 	baseValidation "services.core-service/validation"
-	"time"
 )
 
-type GinOpt struct {
+type ginOpt struct {
 	name string
 	port string
 	host string
@@ -25,12 +24,12 @@ type GinOpt struct {
 }
 
 type ginService struct {
-	isRunning     bool
-	engine        *gin.Engine
-	graceFullServ *http.Server
-	handlers      []func(engine *gin.Engine)
-	i18n          *i18n.I18n
-	*GinOpt
+	isRunning bool
+	engine    *gin.Engine
+	*http.Server
+	handlers []func(engine *gin.Engine)
+	i18n     *i18n.I18n
+	*ginOpt
 }
 
 func New(c config.Config, i18n *i18n.I18n) *ginService {
@@ -38,7 +37,7 @@ func New(c config.Config, i18n *i18n.I18n) *ginService {
 		isRunning: false,
 		i18n:      i18n,
 		handlers:  []func(*gin.Engine){},
-		GinOpt: &GinOpt{
+		ginOpt: &ginOpt{
 			name: "GIN-SERVICE",
 			port: c.ServerConfig.Port,
 			host: c.ServerConfig.Host,
@@ -87,7 +86,7 @@ func (gs *ginService) Start() error {
 		hdl(gs.engine)
 	}
 
-	gs.graceFullServ = &http.Server{
+	gs.Server = &http.Server{
 		Addr:    fmt.Sprintf("%s:%s", gs.host, gs.port),
 		Handler: gs.engine,
 	}
@@ -99,7 +98,7 @@ func (gs *ginService) Start() error {
 		return err
 	}
 
-	err = gs.graceFullServ.Serve(lis)
+	err = gs.Serve(lis)
 
 	if !errors.Is(err, http.ErrServerClosed) {
 		return err
@@ -108,13 +107,13 @@ func (gs *ginService) Start() error {
 	return nil
 }
 
-func (gs *ginService) Stop() error {
-	ctx, cancelFn := context.WithTimeout(context.Background(), time.Second*10)
-	defer cancelFn()
+func (gs *ginService) Stop(ctx context.Context) error {
+	//ctx, cancelFn := context.WithTimeout(context.Background(), time.Second*10)
+	//defer cancelFn()
 
-	if gs.graceFullServ != nil {
-		logger.Info("shutting down....")
-		_ = gs.graceFullServ.Shutdown(ctx)
+	if gs.Server != nil {
+		logger.Info("server shutting down....")
+		_ = gs.Shutdown(ctx)
 	}
 	return nil
 }

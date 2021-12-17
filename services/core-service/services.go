@@ -6,7 +6,9 @@ import (
 	"golang.org/x/sync/errgroup"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
+	"time"
 )
 
 type AppServiceOption func(service *AppService)
@@ -74,21 +76,27 @@ func NewAppService(opts ...AppServiceOption) *AppService {
 }
 
 func (s *AppService) Run() error {
-	g, ctx := errgroup.WithContext(s.ctx)
+	eg, ctx := errgroup.WithContext(s.ctx)
 
-	for _, s := range s.subServices {
-		srv := s
-		g.Go(func() error {
+	wg := sync.WaitGroup{}
+	for _, sub := range s.subServices {
+		srv := sub
+		eg.Go(func() error {
 			<-ctx.Done()
-			return srv.Stop()
+			sctx, cancel := context.WithTimeout(NewContext(context.Background(), srv), 5*time.Second)
+			defer cancel()
+			return srv.Stop(sctx)
 		})
-		g.Go(func() error {
+		wg.Add(1)
+		eg.Go(func() error {
+			wg.Done()
 			return srv.Start()
 		})
 	}
+	wg.Wait()
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, s.signals...)
-	g.Go(func() error {
+	eg.Go(func() error {
 		for {
 			select {
 			case <-ctx.Done():
@@ -98,7 +106,7 @@ func (s *AppService) Run() error {
 			}
 		}
 	})
-	if err := g.Wait(); err != nil && !errors.Is(err, context.Canceled) {
+	if err := eg.Wait(); err != nil && !errors.Is(err, context.Canceled) {
 		return err
 	}
 	return nil
@@ -132,4 +140,16 @@ func (s *AppService) Name() string {
 
 func (s *AppService) Version() string {
 	return s.version
+}
+
+type appServiceKey struct {
+}
+
+func NewContext(ctx context.Context, ra Runnable) context.Context {
+	return context.WithValue(ctx, appServiceKey{}, ra)
+}
+
+func FromContext(ctx context.Context) (Runnable, bool) {
+	ra, ok := ctx.Value(appServiceKey{}).(Runnable)
+	return ra, ok
 }

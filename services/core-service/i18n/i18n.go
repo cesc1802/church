@@ -35,12 +35,11 @@ func NewI18n(c config.I18nConfig) (*I18n, error) {
 }
 
 func (r *I18n) MustLocalize(lang string, msgId string, templateData map[string]string) string {
-	var localizerPtr *i18n.Localizer
-	localizerPtr, ok := r.MapLocalizer[lang]
-	if !ok {
-		localizerPtr = r.MapLocalizer[defaultLanguage]
+	var localizePtr *i18n.Localizer
+	if _, ok := r.MapLocalizer[lang]; !ok {
+		localizePtr = r.MapLocalizer[defaultLanguage]
 	}
-	return localizerPtr.MustLocalize(&i18n.LocalizeConfig{
+	return localizePtr.MustLocalize(&i18n.LocalizeConfig{
 		MessageID:    msgId,
 		TemplateData: templateData,
 	})

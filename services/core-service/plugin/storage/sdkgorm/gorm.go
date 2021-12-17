@@ -1,6 +1,7 @@
 package sdkgorm
 
 import (
+	"context"
 	"errors"
 	"gorm.io/gorm"
 	"math"
@@ -165,7 +166,7 @@ func (gdb *gormDB) Start() error {
 	return nil
 }
 
-func (gdb *gormDB) Stop() error {
+func (gdb *gormDB) Stop(ctx context.Context) error {
 	if gdb.db != nil {
 		if conn, err := gdb.db.DB(); err != nil {
 			conn.Close()

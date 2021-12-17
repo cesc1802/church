@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"context"
 	"fmt"
 	"github.com/rs/zerolog"
 	"os"
@@ -143,4 +144,22 @@ func (l *logger) msg(level string, message interface{}, args ...interface{}) {
 	default:
 		l.log(fmt.Sprintf("%s message %v has unknown type %v", level, message, msg), args...)
 	}
+}
+
+type loggerKey struct{}
+
+func WithLogger(ctx context.Context, log *logger) context.Context {
+	return context.WithValue(ctx, loggerKey{}, log)
+}
+
+func FromContext(ctx context.Context) *logger {
+	if ctx == nil {
+		return NewDefaultLogger()
+	}
+	if l, ok := ctx.Value(loggerKey{}).(*logger); ok {
+		return l
+	}
+
+	return NewDefaultLogger()
+
 }

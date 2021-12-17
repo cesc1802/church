@@ -1,6 +1,9 @@
 package core
 
-import "github.com/gin-gonic/gin"
+import (
+	"context"
+	"github.com/gin-gonic/gin"
+)
 
 type HasPrefix interface {
 	Get() interface{}
@@ -16,7 +19,7 @@ type Runnable interface {
 	Name() string
 	Configure() error
 	Start() error
-	Stop() error
+	Stop(ctx context.Context) error
 }
 type PrefixRunnable interface {
 	HasPrefix
@@ -36,6 +39,7 @@ type ServiceContext interface {
 
 type Service interface {
 	ServiceContext
+	Name() string
 	Version() string
 	HttpServer() HttpServer
 	Run() error

@@ -6,8 +6,8 @@ const (
 	COM0003              = "COM0003"
 	COM0004              = "COM0004"
 	COM0005              = "COM0005"
-	ErrRecordNotFoundKey = "ERR_RECORD_NOT_FOUND"
-	ErrInternalServerKey = "ERR_INTERNAL_SERVER"
-	ErrInvalidRequestKey = "ERR_INVALID_REQUEST"
-	ErrDBQueryKey        = "ERR_DB_QUERY"
+	ERR_RECORD_NOT_FOUND = "ERR_RECORD_NOT_FOUND"
+	ERR_INTERNAL_SERVER  = "ERR_INTERNAL_SERVER"
+	ERR_INVALID_REQUEST  = "ERR_INVALID_REQUEST"
+	ERR_DB_QUERY         = "ERR_DB_QUERY"
 )

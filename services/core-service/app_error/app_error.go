@@ -6,11 +6,11 @@ import (
 )
 
 type AppError struct {
-	StatusCode int                    `json:"statusCode"`
+	StatusCode int                    `json:"status_code"`
 	RootErr    error                  `json:"-"`
 	Message    string                 `json:"message"`
 	Log        string                 `json:"log"`
-	ErrorKey   string                 `json:"errorKey"`
+	ErrorKey   string                 `json:"error_key"`
 	VE         []ValidationErrorField `json:"ve,omitempty"`
 }
 
@@ -75,17 +75,17 @@ func (e *AppError) Error() string {
 	return e.RootError().Error()
 }
 
-var RecordNotFound = NewCustomError(nil, "record not found", ErrRecordNotFoundKey)
+var RecordNotFound = NewCustomError(nil, "record not found", ERR_RECORD_NOT_FOUND)
 
 func ErrInvalidRequest(err error) *AppError {
-	return NewErrorResponse(err, "invalid request", err.Error(), ErrInvalidRequestKey)
+	return NewErrorResponse(err, "invalid request", err.Error(), ERR_INVALID_REQUEST)
 }
 
 func ErrInternal(err error) *AppError {
 	return NewFullErrorResponse(http.StatusInternalServerError, err,
-		"internal error", err.Error(), ErrInternalServerKey)
+		"internal error", err.Error(), ERR_INTERNAL_SERVER)
 }
 
 func ErrDBQuery(err error) *AppError {
-	return NewCustomError(err, err.Error(), ErrDBQueryKey)
+	return NewCustomError(err, err.Error(), ERR_DB_QUERY)
 }
