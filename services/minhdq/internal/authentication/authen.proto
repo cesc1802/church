@@ -1,0 +1,32 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+
+package authentication;
+
+option go_package = './authentication';
+
+service Resgister {
+  rpc Resgister (RegisterModel) returns (google.protobuf.Empty) {}
+}
+
+service Login {
+  rpc Login (LoginModel) returns (JWT) {}
+  rpc CheckAuthen (JWT) returns (google.protobuf.Empty) {}
+}
+
+message RegisterModel {
+  string LoginID = 1;
+  string Password = 2;
+  string LastName = 3;
+  string FirstName = 4;
+}
+
+message LoginModel {
+  string LoginID = 1;
+  string Password = 2;
+}
+
+message JWT {
+  string JWT = 1;
+  int32 Duratation = 2;
+}

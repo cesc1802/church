@@ -2,7 +2,6 @@ package persistence
 
 import (
 	"context"
-	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
 	"minhdq/internal/config"
@@ -37,7 +36,6 @@ func LoadUserGrouprRespositorySql(ctx context.Context) (err error) {
 		return err
 	}
 	cfg.MaxConns = 10
-	fmt.Println(cfg.ConnConfig)
 	conn, err := pgxpool.ConnectConfig(ctx, cfg)
 	if err != nil {
 		log.Fatalln(err)

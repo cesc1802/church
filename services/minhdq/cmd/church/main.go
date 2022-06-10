@@ -99,3 +99,7 @@ func Serve(c *cli.Context) error {
 
 	return app.Serve(ctx, c.String("addr"))
 }
+
+func AuthenServer(c *cli.Context) error {
+
+}
