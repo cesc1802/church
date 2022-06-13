@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/golang/protobuf/ptypes/empty"
 	"minhdq/internal/authentication"
 	"minhdq/internal/persistence"
@@ -14,7 +15,7 @@ type RegisterServer struct {
 	authentication.UnimplementedResgisterServer
 }
 
-func GetRegisServer() (*RegisterServer) {
+func GetRegisServer() *RegisterServer {
 	if registServer == nil {
 		registServer = &RegisterServer{}
 	}
@@ -22,14 +23,15 @@ func GetRegisServer() (*RegisterServer) {
 	return registServer
 }
 
-func (s *RegisterServer) Resgister(ctx context.Context,in *authentication.RegisterModel) (*empty.Empty, error) {
+func (s *RegisterServer) Resgister(ctx context.Context, in *authentication.RegisterModel) (*empty.Empty, error) {
 	if in.GetLoginID() == "" {
-		return nil,errors.New("LoginID Can't be null")
+		return nil, errors.New("LoginID Can't be null")
 	}
 
 	accounts := persistence.Account()
 
-	err := accounts.Register(in.GetLoginID(),in.GetPassword(),in.GetFirstName(),in.LastName)
+	fmt.Println(in.String())
+	err := accounts.Register(in.GetLoginID(), in.GetPassword(), in.GetFirstName(), in.LastName)
 
-	return nil, err
+	return &empty.Empty{}, err
 }

@@ -44,6 +44,40 @@ func main() {
 				},
 			},
 		},
+		{
+			Name:   "authen",
+			Usage:  "Serve Authentication server",
+			Action: AuthenServer,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:    "laddr",
+					Aliases: []string{"login-address"},
+					Value:   "0.0.0.0:8081",
+				},
+				&cli.StringFlag{
+					Name:    "raddr",
+					Aliases: []string{"register-address"},
+					Value:   "0.0.0.0:8082",
+				},
+			},
+		},
+		{
+			Name:   "client",
+			Usage:  "Client Authentication server",
+			Action: AuthenClient,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:    "laddr",
+					Aliases: []string{"login-address"},
+					Value:   "127.0.0.1:8081",
+				},
+				&cli.StringFlag{
+					Name:    "raddr",
+					Aliases: []string{"register-address"},
+					Value:   "127.0.0.2:8082",
+				},
+			},
+		},
 	}
 
 	app.Before = func(c *cli.Context) error {
@@ -101,5 +135,31 @@ func Serve(c *cli.Context) error {
 }
 
 func AuthenServer(c *cli.Context) error {
+	ctx := c.Context
+	err := persistence.LoadAccountRespositoryMem(ctx)
 
+	if err != nil {
+		return err
+	}
+
+	errChan := make(chan error, 1)
+	defer close(errChan)
+
+	go func() {
+		errChan <- app.ServeLoginServer(ctx, c.String("laddr"))
+	}()
+
+	go func() {
+		errChan <- app.ServeRegisServer(ctx, c.String("raddr"))
+	}()
+
+	select {
+	case err := <-errChan:
+		return err
+	}
+}
+
+func AuthenClient(c *cli.Context) error {
+	ctx := c.Context
+	return app.NewAuthenClient(ctx, c.String("raddr"), c.String("laddr"))
 }

@@ -3,6 +3,9 @@ package app
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"google.golang.org/grpc"
+	"minhdq/internal/authentication"
+	"minhdq/internal/service"
 	"time"
 )
 
@@ -24,4 +27,18 @@ func NewChiHandeler() *chi.Mux {
 	return r
 }
 
+func NewRegisterServer() (*grpc.Server, error) {
+	s := grpc.NewServer()
+	regisS := service.GetRegisServer()
+	authentication.RegisterResgisterServer(s, regisS)
 
+	return s, nil
+}
+
+func NewLoginServer() (*grpc.Server, error) {
+	s := grpc.NewServer()
+	loginS := service.GetLoginServer()
+	authentication.RegisterLoginServer(s, loginS)
+
+	return s, nil
+}

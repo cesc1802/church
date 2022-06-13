@@ -44,3 +44,63 @@ func Serve(ctx context.Context, addr string) (err error) {
 		return err
 	}
 }
+
+func ServeLoginServer(ctx context.Context, addr string) (err error) {
+	defer log.Printf("Login server stopped", err)
+
+	s, err := NewLoginServer()
+
+	ctx, cancel := context.WithCancel(ctx)
+	errChan := make(chan error, 1)
+
+	go func(ctx context.Context, errChan chan error) {
+		lis, err := net.Listen("tcp", addr)
+		if err != nil {
+			errChan <- err
+		}
+		if err := s.Serve(lis); err != nil {
+			errChan <- err
+		}
+	}(ctx, errChan)
+
+	log.Printf("Login server started at %s\n", addr)
+
+	select {
+	case <-ctx.Done():
+		cancel()
+		return nil
+	case err = <-errChan:
+		cancel()
+		return err
+	}
+}
+
+func ServeRegisServer(ctx context.Context, addr string) (err error) {
+	defer log.Printf("Register server stopped", err)
+
+	s, err := NewRegisterServer()
+
+	ctx, cancel := context.WithCancel(ctx)
+	errChan := make(chan error, 1)
+
+	go func(ctx context.Context, errChan chan error) {
+		lis, err := net.Listen("tcp", addr)
+		if err != nil {
+			errChan <- err
+		}
+		if err := s.Serve(lis); err != nil {
+			errChan <- err
+		}
+	}(ctx, errChan)
+
+	log.Printf("Register server started at %s\n", addr)
+
+	select {
+	case <-ctx.Done():
+		cancel()
+		return nil
+	case err = <-errChan:
+		cancel()
+		return err
+	}
+}

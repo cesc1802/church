@@ -18,7 +18,7 @@ type AccountModel struct {
 
 type AccountMem struct {
 	accounts []AccountModel
-	mu *sync.RWMutex
+	mu       *sync.RWMutex
 }
 
 func CreateJwtToken(LoginID string) (token string, err error) {
@@ -36,7 +36,7 @@ func CreateJwtToken(LoginID string) (token string, err error) {
 	return
 }
 
-func (a AccountMem) Register(loginId string,password string,firstName string,lastName string) (err error){
+func (a *AccountMem) Register(loginId string, password string, firstName string, lastName string) (err error) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	if loginId == "" {
@@ -47,7 +47,7 @@ func (a AccountMem) Register(loginId string,password string,firstName string,las
 		return errors.New("loginID already existed")
 	}
 
-	a.accounts = append(a.accounts,AccountModel{
+	a.accounts = append(a.accounts, AccountModel{
 		LoginID:   loginId,
 		Password:  password,
 		LastName:  &firstName,
@@ -57,18 +57,21 @@ func (a AccountMem) Register(loginId string,password string,firstName string,las
 	return nil
 }
 
-func (a AccountMem) Login(loginId string,password string) (jwt string, err error) {
+func (a *AccountMem) Login(loginId string, password string) (jwt string, err error) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
+	fmt.Println(a.accounts)
 	for _, account := range a.accounts {
+		fmt.Println(account)
 		if account.LoginID == loginId && account.Password == password {
+			fmt.Printf("hello")
 			return CreateJwtToken(loginId)
 		}
 	}
-	return  "",errors.New("login invalid")
+	return "", errors.New("login invalid")
 }
 
-func (a AccountMem) FindById(id string) (existed bool) {
+func (a *AccountMem) FindById(id string) (existed bool) {
 	for _, account := range a.accounts {
 		if account.LoginID == id {
 			return true
@@ -77,27 +80,27 @@ func (a AccountMem) FindById(id string) (existed bool) {
 	return false
 }
 
-func (a AccountMem) Authentization(jwtString string) (err error) {
-	token,err := jwt.Parse(jwtString,  func(token *jwt.Token) (interface{}, error) {
+func (a *AccountMem) Authentization(jwtString string) (err error) {
+	token, err := jwt.Parse(jwtString, func(token *jwt.Token) (interface{}, error) {
 
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return []byte("SECRET"),nil
+		return []byte("SECRET"), nil
 	})
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		if a.FindById(claims["ID"].(string)) {
-			if (claims["Issuer"].(string)  == "minhdq") {
+			if claims["Issuer"].(string) == "minhdq" {
 				return nil
 			}
 		}
 	}
 
-	return  errors.New("token is invalid")
+	return errors.New("token is invalid")
 }
 
 func newAccountRepoMem(ctx context.Context) (repo *AccountMem, err error) {
-	return &AccountMem{accounts: []AccountModel{}}, nil
+	return &AccountMem{accounts: []AccountModel{}, mu: &sync.RWMutex{}}, nil
 }
