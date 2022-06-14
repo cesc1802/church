@@ -13,17 +13,17 @@ type RegisterStorage interface {
 	Create(ctx context.Context, input *domain.CreateUserModel) error
 }
 
-type registerBusiness struct {
+type RegisterBusiness struct {
 	store RegisterStorage
 }
 
-func NewRegisterBusiness(store RegisterStorage) *registerBusiness {
-	return &registerBusiness{
+func NewRegisterBusiness(store RegisterStorage) *RegisterBusiness {
+	return &RegisterBusiness{
 		store: store,
 	}
 }
 
-func (biz *registerBusiness) UserRegister(ctx context.Context,
+func (biz *RegisterBusiness) UserRegister(ctx context.Context,
 	input *dto.RegisterRequest) error {
 	user, err := biz.store.FindOneByLoginID(ctx, input.LoginID)
 

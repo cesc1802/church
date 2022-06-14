@@ -27,6 +27,11 @@ type PrefixRunnable interface {
 }
 
 type HTTPServerHandler = func(*gin.Engine)
+
+type GrpcServer interface {
+	Runnable
+}
+
 type HttpServer interface {
 	Runnable
 	AddHandler(HTTPServerHandler)

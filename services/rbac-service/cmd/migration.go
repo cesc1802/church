@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	migrate "github.com/rubenv/sql-migrate"
 	"github.com/spf13/cobra"
 	"gorm.io/gorm"
@@ -10,11 +11,12 @@ import (
 	"services.rbac-service/constants"
 )
 
-func mustErr (err error) {
+func mustErr(err error) {
 	if err != nil {
 		logger.Fatal("ERR: ", err)
 	}
 }
+
 var migrationCmd = &cobra.Command{
 	Use:   "migration",
 	Short: "This command used to migrate database",
@@ -27,9 +29,9 @@ func init() {
 }
 
 var migrateUp = &cobra.Command{
-	Use: "up",
+	Use:   "up",
 	Short: "Run migration up",
-	Long: "Run migration up",
+	Long:  "Run migration up",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		migrations := &migrate.FileMigrationSource{
 			Dir: "./dbmigration",
@@ -49,15 +51,15 @@ var migrateUp = &cobra.Command{
 
 		logger.Info("Apply number migration %d", applyNum)
 
-		baseDB.Stop()
+		baseDB.Stop(context.Background())
 		return nil
 	},
 }
 
 var migrateDown = &cobra.Command{
-	Use: "down",
+	Use:   "down",
 	Short: "down migration down",
-	Long: "down migration down",
+	Long:  "down migration down",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		migrations := &migrate.FileMigrationSource{
 			Dir: "./dbmigration",
@@ -77,7 +79,7 @@ var migrateDown = &cobra.Command{
 
 		logger.Info("Apply number migration %d", applyNum)
 
-		baseDB.Stop()
+		baseDB.Stop(context.Background())
 		return nil
 	},
 }

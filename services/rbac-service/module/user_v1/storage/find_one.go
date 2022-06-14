@@ -7,11 +7,11 @@ import (
 	"services.rbac-service/module/user_v1/domain"
 )
 
-func (s *postgresUserStorage) findByConditions(ctx context.Context,
+func (s *postgresUserStorage) FindByConditions(ctx context.Context,
 	conditions map[string]interface{}) (*domain.UserModel, error) {
 	db := s.db
 	var user domain.UserModel
-	if err := db.Where(domain.UserModel{}.TableName()).First(&user).Error; err != nil {
+	if err := db.Table(domain.UserModel{}.TableName()).Where(conditions).First(&user).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, app_error.RecordNotFound
 		}

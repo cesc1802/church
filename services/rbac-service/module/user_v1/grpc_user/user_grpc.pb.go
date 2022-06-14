@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc_user v1.2.0
 // - protoc             v3.6.1
-// source: authentication/authen.proto
+// source: module/user_v1/grpc_user/user.proto
 
-package authentication
+package grpc_user
 
 import (
 	context "context"
@@ -102,7 +102,7 @@ var Resgister_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "authentication/authen.proto",
+	Metadata: "module/user_v1/grpc_user/user.proto",
 }
 
 // LoginClient is the client API for Login service.
@@ -224,5 +224,5 @@ var Login_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "authentication/authen.proto",
+	Metadata: "module/user_v1/grpc_user/user.proto",
 }

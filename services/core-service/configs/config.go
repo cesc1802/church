@@ -44,11 +44,11 @@ func LoadConfig() (c Config, err error) {
 		return
 	}
 
-	// load config from config directory
+	// load configs from configs directory
 	if path == "/" {
-		viper.AddConfigPath("/config")
+		viper.AddConfigPath("/configs")
 	} else {
-		viper.AddConfigPath(fmt.Sprintf("%v/config", path))
+		viper.AddConfigPath(fmt.Sprintf("%v/configs", path))
 	}
 	viper.SetConfigName(fmt.Sprintf("app-%v", strings.ToLower(env)))
 	viper.SetConfigType("yaml")

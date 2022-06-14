@@ -20,6 +20,7 @@ type AppService struct {
 	cancel       func()
 	signals      []os.Signal
 	httpserver   HttpServer
+	grpcServer   []GrpcServer
 	subServices  []Runnable
 	initServices map[string]PrefixRunnable
 }
@@ -27,6 +28,12 @@ type AppService struct {
 func WithVersion(version string) AppServiceOption {
 	return func(app *AppService) {
 		app.version = version
+	}
+}
+
+func WithGrpcServer(server GrpcServer) AppServiceOption {
+	return func(app *AppService) {
+		app.grpcServer = append(app.grpcServer, server)
 	}
 }
 
@@ -117,6 +124,10 @@ func (s *AppService) Stop() error {
 		s.cancel()
 	}
 	return nil
+}
+
+func (s *AppService) GrpcServer() []GrpcServer {
+	return s.grpcServer
 }
 
 func (s *AppService) HttpServer() HttpServer {
