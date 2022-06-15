@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc"
 )
 
 type HasPrefix interface {
@@ -21,6 +22,7 @@ type Runnable interface {
 	Start() error
 	Stop(ctx context.Context) error
 }
+
 type PrefixRunnable interface {
 	HasPrefix
 	Runnable
@@ -29,7 +31,9 @@ type PrefixRunnable interface {
 type HTTPServerHandler = func(*gin.Engine)
 
 type GrpcServer interface {
+	HasPrefix
 	Runnable
+	AddgRPCServer(s *grpc.Server)
 }
 
 type HttpServer interface {
@@ -47,6 +51,8 @@ type Service interface {
 	Name() string
 	Version() string
 	HttpServer() HttpServer
+	GrpcServers() []GrpcServer
+	GrpcServer(prefix string) GrpcServer
 	Run() error
 	Stop() error
 }

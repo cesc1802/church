@@ -13,14 +13,16 @@ const DefaultENV = "dev"
 type Config struct {
 	Env string
 
-	RedisConfig      `mapstructure:"redis"`
-	SQLDBConfigs     `mapstructure:"databases"`
-	NoSQLConfigs     `mapstructure:"nosqldatabases"`
-	ServerConfig     `mapstructure:"server"`
-	HttpClientConfig `mapstructure:"client"`
-	I18nConfig       `mapstructure:"i18n"`
-	CORSConfig       `mapstructure:"cors"`
-	LogConfig        `mapstructure:"log"`
+	RedisConfig          `mapstructure:"redis"`
+	SQLDBConfigs         `mapstructure:"databases"`
+	NoSQLConfigs         `mapstructure:"nosqldatabases"`
+	ServerConfig         `mapstructure:"server"`
+	LoginServerConfig    ServerConfig `mapstructure:"loginserver"`
+	RegisterServerConfig ServerConfig `mapstructure:"registerserver"`
+	HttpClientConfig     `mapstructure:"client"`
+	I18nConfig           `mapstructure:"i18n"`
+	CORSConfig           `mapstructure:"cors"`
+	LogConfig            `mapstructure:"log"`
 }
 
 // LoadConfig reads configuration from file or environment variables.

@@ -79,6 +79,12 @@ func NewAppService(opts ...AppServiceOption) *AppService {
 		sv.subServices = append(sv.subServices, sv.httpserver)
 	}
 
+	if len(sv.grpcServer) != 0 {
+		for _, grS := range sv.grpcServer {
+			sv.subServices = append(sv.subServices, grS)
+		}
+	}
+
 	return sv
 }
 
@@ -126,8 +132,17 @@ func (s *AppService) Stop() error {
 	return nil
 }
 
-func (s *AppService) GrpcServer() []GrpcServer {
+func (s *AppService) GrpcServers() []GrpcServer {
 	return s.grpcServer
+}
+
+func (s *AppService) GrpcServer(prefix string) GrpcServer {
+	for _, s := range s.grpcServer {
+		if s.GetPrefix() == prefix {
+			return s
+		}
+	}
+	return nil
 }
 
 func (s *AppService) HttpServer() HttpServer {
