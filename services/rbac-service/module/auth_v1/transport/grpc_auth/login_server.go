@@ -8,14 +8,21 @@ import (
 	"services.rbac-service/module/user_v1/grpc_user"
 )
 
+type ILoginBusiness interface {
+	UserLogin(ctx context.Context,
+		input *dto.LoginRequest,
+	) (*dto.LoginResponse, error)
+}
+
 type LoginBusinessgRPC struct {
 	grpc_user.UnimplementedLoginServer
-	business.LoginBusiness
+	ILoginBusiness
 }
 
 func NewLogingRPCBusiness(store business.LoginStorage) *LoginBusinessgRPC {
+	lbusiness := business.NewLoginBusiness(store)
 	return &LoginBusinessgRPC{
-		LoginBusiness: *business.NewLoginBusiness(store),
+		ILoginBusiness: lbusiness,
 	}
 }
 

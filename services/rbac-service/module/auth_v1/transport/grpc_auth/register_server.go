@@ -10,14 +10,21 @@ import (
 	"services.rbac-service/module/user_v1/grpc_user"
 )
 
+type IRegisterBusiness interface {
+	UserRegister(ctx context.Context,
+		input *dto.RegisterRequest,
+	) error
+}
+
 type RegisterBusinessgRPC struct {
 	grpc_user.UnimplementedResgisterServer
-	business.RegisterBusiness
+	IRegisterBusiness
 }
 
 func NewRegistergRPCBusiness(store business.RegisterStorage) *RegisterBusinessgRPC {
+	lbusiness := business.NewRegisterBusiness(store)
 	return &RegisterBusinessgRPC{
-		RegisterBusiness: *business.NewRegisterBusiness(store),
+		IRegisterBusiness: lbusiness,
 	}
 }
 
