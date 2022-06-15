@@ -11,8 +11,8 @@ var (
 )
 
 type AccountRepository interface {
-	Register(loginId string,password string,firstName string,lastName string) (err error)
-	Login(loginId string,password string) (jwt string, err error)
+	Register(loginId string, password string, firstName string, lastName string) (err error)
+	Login(loginId string, password string) (jwt string, err error)
 	FindById(id string) (existed bool)
 	Authentization(jwt string) (err error)
 }

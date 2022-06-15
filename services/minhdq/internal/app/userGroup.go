@@ -2,24 +2,23 @@ package app
 
 import (
 	"encoding/json"
-	"github.com/go-chi/chi/v5"
-	"minhdq/internal/service"
 	"net/http"
 	"strconv"
+
+	"github.com/go-chi/chi/v5"
+	"minhdq/internal/service"
 )
 
 func UserGroupUpdate(w http.ResponseWriter, r *http.Request) {
 	cmd := service.UserGroupUpdateCommand{}
 
 	err := json.NewDecoder(r.Body).Decode(&cmd)
-
 	if err != nil {
 		ResponeError(w, ErrUnProcessableEnity)
 		return
 	}
 
 	data, err := service.UpdateUserGroup(r.Context(), cmd)
-
 	if err != nil {
 		ResponeError(w, ErrBadRequest)
 		return
@@ -32,7 +31,6 @@ func UserGroupCreate(w http.ResponseWriter, r *http.Request) {
 	cmd := service.UserGroupCreateCommand{}
 
 	err := json.NewDecoder(r.Body).Decode(&cmd)
-
 	if err != nil {
 		ResponeError(w, ErrUnProcessableEnity)
 		return
@@ -68,7 +66,6 @@ func UserGroupDelete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID, err := strconv.Atoi(chi.URLParam(r, "userId"))
-
 	if err != nil {
 		ResponeError(w, ErrUnProcessableEnity)
 		return

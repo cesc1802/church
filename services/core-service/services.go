@@ -2,13 +2,14 @@ package core
 
 import (
 	"context"
-	"github.com/pkg/errors"
-	"golang.org/x/sync/errgroup"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/pkg/errors"
+	"golang.org/x/sync/errgroup"
 )
 
 type AppServiceOption func(service *AppService)
@@ -168,8 +169,7 @@ func (s *AppService) Version() string {
 	return s.version
 }
 
-type appServiceKey struct {
-}
+type appServiceKey struct{}
 
 func NewContext(ctx context.Context, ra Runnable) context.Context {
 	return context.WithValue(ctx, appServiceKey{}, ra)

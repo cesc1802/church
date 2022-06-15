@@ -10,7 +10,6 @@ import (
 )
 
 func NewLoginServer(sc core.ServiceContext) (*grpc.Server, error) {
-
 	db := sc.MustGet(constants.KeyMainDb).(*gorm.DB)
 	store := storage.NewPostgresUserStorage(db)
 

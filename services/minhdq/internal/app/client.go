@@ -2,16 +2,17 @@ package app
 
 import (
 	"context"
+	"log"
+	"time"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"log"
+
 	"minhdq/internal/authentication"
-	"time"
 )
 
 func NewAuthenClient(ctx context.Context, raddr string, laddr string) error {
 	conn, err := grpc.Dial(raddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-
 	if err != nil {
 		log.Fatalf("did not connect to register server: %v", err)
 	}
@@ -49,7 +50,6 @@ func NewAuthenClient(ctx context.Context, raddr string, laddr string) error {
 		LoginID:  "1",
 		Password: "Hello",
 	})
-
 	if err != nil {
 		log.Fatalf("could not login: %v", err)
 	}

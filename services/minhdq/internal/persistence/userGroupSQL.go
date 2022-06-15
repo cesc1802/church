@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"minhdq/internal/model"
@@ -18,13 +19,11 @@ func (u userGroupPSQL) FindAll(ctx context.Context) (usergroup []*model.UserGrou
 	builder := psql.Select("group_id", "user_id", "created_at").From(userGroupTable)
 
 	query, args, err := builder.ToSql()
-
 	if err != nil {
 		return
 	}
 
 	rows, err := u.conn.Query(ctx, query, args...)
-
 	if err != nil {
 		return
 	}
@@ -49,7 +48,6 @@ func (u userGroupPSQL) Save(ctx context.Context, userGroup model.UserGroup) (err
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Insert(userGroupTable).Columns("group_id", "user_id", "created_at").Values(userGroup.GroupID, userGroup.UserID, userGroup.CreatedAt)
 	query, args, err := builder.ToSql()
-
 	if err != nil {
 		return
 	}
@@ -63,7 +61,6 @@ func (u userGroupPSQL) Update(ctx context.Context, userGroup model.UserGroup) (r
 	builer := psql.Update(userGroupTable).Set("created_at", userGroup.CreatedAt).Where(sq.And{sq.Eq{"group_id": userGroup.GroupID}, sq.Eq{"user_id": userGroup.UserID}})
 
 	query, args, err := builer.ToSql()
-
 	if err != nil {
 		return
 	}
@@ -78,7 +75,6 @@ func (u userGroupPSQL) Delete(ctx context.Context, userID int, groupID int) (err
 	builder := psql.Delete(userGroupTable).Where(sq.And{sq.Eq{"user_id": userID}, sq.Eq{"group_id": groupID}})
 
 	query, args, err := builder.ToSql()
-
 	if err != nil {
 		return
 	}

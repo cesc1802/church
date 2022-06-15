@@ -1,9 +1,11 @@
 package gin_auth
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"net/http"
+
 	core "services.core-service"
 	"services.core-service/app_error"
 	"services.rbac-service/constants"
@@ -24,7 +26,6 @@ func Login(sc core.ServiceContext) gin.HandlerFunc {
 		store := storage.NewPostgresUserStorage(db)
 		biz := business.NewLoginBusiness(store)
 		res, err := biz.UserLogin(c.Request.Context(), &input)
-
 		if err != nil {
 			app_error.MustError(err)
 		}

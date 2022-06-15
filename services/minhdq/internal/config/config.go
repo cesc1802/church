@@ -1,8 +1,9 @@
 package config
 
 import (
-	"github.com/kelseyhightower/envconfig"
 	"sync"
+
+	"github.com/kelseyhightower/envconfig"
 )
 
 var (

@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/golang-jwt/jwt/v4"
 	"sync"
 	"time"
+
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type AccountModel struct {
@@ -82,7 +83,6 @@ func (a *AccountMem) FindById(id string) (existed bool) {
 
 func (a *AccountMem) Authentization(jwtString string) (err error) {
 	token, err := jwt.Parse(jwtString, func(token *jwt.Token) (interface{}, error) {
-
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}

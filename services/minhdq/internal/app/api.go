@@ -1,12 +1,13 @@
 package app
 
 import (
+	"time"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"google.golang.org/grpc"
 	"minhdq/internal/authentication"
 	"minhdq/internal/service"
-	"time"
 )
 
 func NewChiHandeler() *chi.Mux {

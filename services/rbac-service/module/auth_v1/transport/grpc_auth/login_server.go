@@ -2,6 +2,7 @@ package grpc_auth
 
 import (
 	"context"
+
 	"services.rbac-service/module/auth_v1/business"
 	"services.rbac-service/module/auth_v1/dto"
 	"services.rbac-service/module/user_v1/grpc_user"
@@ -23,7 +24,6 @@ func (biz *LoginBusinessgRPC) Login(ctx context.Context, in *grpc_user.LoginMode
 		LoginID:  in.GetLoginID(),
 		Password: in.GetPassword(),
 	})
-
 	if err != nil {
 		return nil, err
 	}

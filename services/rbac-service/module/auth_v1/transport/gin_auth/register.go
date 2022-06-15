@@ -1,9 +1,11 @@
 package gin_auth
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"net/http"
+
 	core "services.core-service"
 	"services.core-service/app_error"
 	"services.rbac-service/constants"

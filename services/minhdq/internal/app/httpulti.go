@@ -29,7 +29,6 @@ func ResponeError(w http.ResponseWriter, Err ResponeErr) {
 
 func ResponeData(w http.ResponseWriter, data interface{}) {
 	respone, err := json.Marshal(data)
-
 	if err != nil {
 		return
 	}

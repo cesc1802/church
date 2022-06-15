@@ -4,9 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"google.golang.org/grpc"
 	"net"
 	"net/http"
+
+	"google.golang.org/grpc"
+
 	config "services.core-service/configs"
 	"services.core-service/i18n"
 	"services.core-service/logger"
@@ -36,7 +38,7 @@ func (gs *gRPCService) GetPrefix() string {
 }
 
 func (gs *gRPCService) Configure() error {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 

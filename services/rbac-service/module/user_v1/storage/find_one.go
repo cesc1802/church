@@ -2,13 +2,15 @@ package storage
 
 import (
 	"context"
+
 	"gorm.io/gorm"
 	"services.core-service/app_error"
 	"services.rbac-service/module/user_v1/domain"
 )
 
 func (s *postgresUserStorage) FindByConditions(ctx context.Context,
-	conditions map[string]interface{}) (*domain.UserModel, error) {
+	conditions map[string]interface{},
+) (*domain.UserModel, error) {
 	db := s.db
 	var user domain.UserModel
 	if err := db.Table(domain.UserModel{}.TableName()).Where(conditions).First(&user).Error; err != nil {

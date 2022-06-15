@@ -3,6 +3,7 @@ package grpc_auth
 import (
 	"context"
 	"errors"
+
 	"github.com/golang/protobuf/ptypes/empty"
 	"services.rbac-service/module/auth_v1/business"
 	"services.rbac-service/module/auth_v1/dto"

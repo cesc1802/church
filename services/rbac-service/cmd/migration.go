@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+
 	migrate "github.com/rubenv/sql-migrate"
 	"github.com/spf13/cobra"
 	"gorm.io/gorm"

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/golang/protobuf/ptypes/empty"
 	"minhdq/internal/authentication"
 	"minhdq/internal/persistence"
@@ -23,7 +24,6 @@ func GetLoginServer() *LoginServer {
 
 func (s *LoginServer) Login(ctx context.Context, in *authentication.LoginModel) (*authentication.JWT, error) {
 	jwt, err := persistence.Account().Login(in.GetLoginID(), in.GetPassword())
-
 	if err != nil {
 		return nil, err
 	}
@@ -33,6 +33,7 @@ func (s *LoginServer) Login(ctx context.Context, in *authentication.LoginModel) 
 		Duratation: 24 * 2 * 60 * 60,
 	}, nil
 }
+
 func (s *LoginServer) CheckAuthen(ctx context.Context, in *authentication.JWT) (*empty.Empty, error) {
 	err := persistence.Account().Authentization(in.GetJWT())
 

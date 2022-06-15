@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+
 	"gorm.io/gorm"
 	"services.rbac-service/module/user_v1/domain"
 )

@@ -2,12 +2,13 @@ package business
 
 import (
 	"context"
+	"time"
+
 	"github.com/golang-jwt/jwt/v4"
 	"services.core-service/app_error"
 	"services.rbac-service/errorcode"
 	"services.rbac-service/module/auth_v1/dto"
 	"services.rbac-service/module/user_v1/domain"
-	"time"
 )
 
 type LoginStorage interface {
@@ -27,12 +28,11 @@ func NewLoginBusiness(store LoginStorage) *LoginBusiness {
 }
 
 func (biz *LoginBusiness) UserLogin(ctx context.Context,
-	input *dto.LoginRequest) (*dto.LoginResponse, error) {
-
+	input *dto.LoginRequest,
+) (*dto.LoginResponse, error) {
 	conditions := map[string]interface{}{"LoginID": input.LoginID, "Password": input.Password}
 
 	user, err := biz.store.FindByConditions(ctx, conditions)
-
 	if err != nil {
 		return nil, app_error.NewCustomError(err, "", errorcode.ErrCannotGetUser)
 	}
@@ -55,7 +55,6 @@ func (biz *LoginBusiness) UserLogin(ctx context.Context,
 	})
 
 	token, err := j.SignedString([]byte("SECRET"))
-
 	if err != nil {
 		return nil, app_error.NewCustomError(err, "", errorcode.ErrCannotCreateUser)
 	}

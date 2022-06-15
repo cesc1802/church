@@ -3,12 +3,14 @@ package httpserver
 import (
 	"context"
 	"fmt"
+	"net"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
-	"net"
-	"net/http"
+
 	config "services.core-service/configs"
 	"services.core-service/httpserver/middleware"
 	"services.core-service/i18n"
@@ -64,12 +66,11 @@ func (gs *ginService) Configure() error {
 	gs.engine.RedirectFixedPath = true
 
 	// Recovery
-	//TODO: you can add more middleware here
+	// TODO: you can add more middleware here
 	gs.engine.Use(middleware.Recovery(gs.i18n))
 
 	gs.isRunning = true
 	return nil
-
 }
 
 func (gs *ginService) Name() string {
@@ -108,8 +109,8 @@ func (gs *ginService) Start() error {
 }
 
 func (gs *ginService) Stop(ctx context.Context) error {
-	//ctx, cancelFn := context.WithTimeout(context.Background(), time.Second*10)
-	//defer cancelFn()
+	// ctx, cancelFn := context.WithTimeout(context.Background(), time.Second*10)
+	// defer cancelFn()
 
 	if gs.Server != nil {
 		logger.Info("server shutting down....")

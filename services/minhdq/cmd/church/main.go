@@ -2,18 +2,20 @@ package main
 
 import (
 	"context"
-	"github.com/joho/godotenv"
-	"github.com/urfave/cli/v2"
 	"log"
-	"minhdq/internal/app"
-	"minhdq/internal/config"
-	"minhdq/internal/persistence"
 	"os"
 	"os/signal"
 	"sort"
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/joho/godotenv"
+	"github.com/urfave/cli/v2"
+
+	"minhdq/internal/app"
+	"minhdq/internal/config"
+	"minhdq/internal/persistence"
 )
 
 func main() {
@@ -126,7 +128,6 @@ func Serve(c *cli.Context) error {
 	ctx := c.Context
 
 	err := persistence.LoadUserGrouprRespositorySql(ctx)
-
 	if err != nil {
 		return err
 	}
@@ -137,7 +138,6 @@ func Serve(c *cli.Context) error {
 func AuthenServer(c *cli.Context) error {
 	ctx := c.Context
 	err := persistence.LoadAccountRespositoryMem(ctx)
-
 	if err != nil {
 		return err
 	}

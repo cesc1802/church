@@ -2,10 +2,11 @@ package service
 
 import (
 	"context"
+	"time"
+
 	"github.com/asaskevich/govalidator"
 	"minhdq/internal/model"
 	"minhdq/internal/persistence"
-	"time"
 )
 
 type UserGroupCreateCommand struct {

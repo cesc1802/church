@@ -2,11 +2,13 @@ package persistence
 
 import (
 	"context"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
+	"sync"
+
+	"github.com/jackc/pgx/v4/pgxpool"
+
 	"minhdq/internal/config"
 	"minhdq/internal/model"
-	"sync"
 )
 
 var (
@@ -31,7 +33,6 @@ func UserGroup() UserGroupRepository {
 
 func LoadUserGrouprRespositorySql(ctx context.Context) (err error) {
 	cfg, err := pgxpool.ParseConfig(config.Get().PostgresURL)
-
 	if err != nil {
 		return err
 	}
