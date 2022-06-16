@@ -1,6 +1,8 @@
 package storage
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type postgresUserStorage struct {
 	db *gorm.DB

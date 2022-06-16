@@ -2,7 +2,7 @@ package main
 
 import "services.rbac-service/cmd"
 
-func main()  {
+func main() {
 	if err := cmd.Execute(); err != nil {
 		return
 	}

@@ -1,8 +1,10 @@
 package handlers
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+
 	core "services.core-service"
 	"services.rbac-service/module/auth_v1/transport/gin_auth"
 )

@@ -3,14 +3,16 @@ package sdkgorm
 import (
 	"context"
 	"errors"
-	"gorm.io/gorm"
 	"math"
-	config "services.core-service/configs"
-	"services.core-service/logger"
-	"services.core-service/plugin/storage/sdkgorm/gormdialects"
 	"strings"
 	"sync"
 	"time"
+
+	"gorm.io/gorm"
+
+	config "services.core-service/configs"
+	"services.core-service/logger"
+	"services.core-service/plugin/storage/sdkgorm/gormdialects"
 )
 
 type GormDBType int
@@ -114,13 +116,13 @@ func (gdb *gormDB) Get() interface{} {
 		return nil
 	}
 
-	//TODO: need setup logger
-	//gdb.db.Logger =
+	// TODO: need setup logger
+	// gdb.db.Logger =
 
 	return gdb.db
 }
-func (gdb *gormDB) getConnWithRetry(dbType GormDBType, retry int) (*gorm.DB, error) {
 
+func (gdb *gormDB) getConnWithRetry(dbType GormDBType, retry int) (*gorm.DB, error) {
 	db, err := gdb.getDBConn(dbType)
 
 	if err != nil {
@@ -133,12 +135,12 @@ func (gdb *gormDB) getConnWithRetry(dbType GormDBType, retry int) (*gorm.DB, err
 				break
 			}
 		}
-
 	} else {
 		go gdb.reconnectIfNeed()
 	}
 	return db, err
 }
+
 func (gdb *gormDB) Configure() error {
 	if gdb.isRunning {
 		return nil

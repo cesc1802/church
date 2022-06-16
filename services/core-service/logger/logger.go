@@ -3,8 +3,9 @@ package logger
 import (
 	"context"
 	"fmt"
-	"github.com/rs/zerolog"
 	"os"
+
+	"github.com/rs/zerolog"
 )
 
 // Logger -.
@@ -161,5 +162,4 @@ func FromContext(ctx context.Context) *logger {
 	}
 
 	return NewDefaultLogger()
-
 }

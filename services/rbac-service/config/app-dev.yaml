@@ -2,6 +2,14 @@ server:
   host: localhost
   port: 8085
 
+loginserver:
+  host: localhost
+  port: 8006
+
+registerserver:
+  host: localhost
+  port: 8007
+
 databases:
   - host: 10.0.255.229
     port: 5432

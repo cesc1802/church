@@ -1,8 +1,10 @@
 package rest_response
 
 import (
-	"github.com/go-playground/validator/v10"
 	"net/http"
+
+	"github.com/go-playground/validator/v10"
+
 	"services.core-service/app_error"
 	"services.core-service/i18n"
 )
@@ -51,7 +53,7 @@ func (r responder) Error(c JSONResponder, err error) {
 }
 
 func (r responder) SetLogTrace(logTrace bool) {
-	//panic("implement me")
+	// panic("implement me")
 }
 
 type response struct {

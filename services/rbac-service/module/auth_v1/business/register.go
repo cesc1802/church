@@ -2,6 +2,7 @@ package business
 
 import (
 	"context"
+
 	"services.core-service/app_error"
 	"services.rbac-service/errorcode"
 	"services.rbac-service/module/auth_v1/dto"
@@ -13,20 +14,20 @@ type RegisterStorage interface {
 	Create(ctx context.Context, input *domain.CreateUserModel) error
 }
 
-type registerBusiness struct {
+type RegisterBusiness struct {
 	store RegisterStorage
 }
 
-func NewRegisterBusiness(store RegisterStorage) *registerBusiness {
-	return &registerBusiness{
+func NewRegisterBusiness(store RegisterStorage) *RegisterBusiness {
+	return &RegisterBusiness{
 		store: store,
 	}
 }
 
-func (biz *registerBusiness) UserRegister(ctx context.Context,
-	input *dto.RegisterRequest) error {
+func (biz *RegisterBusiness) UserRegister(ctx context.Context,
+	input *dto.RegisterRequest,
+) error {
 	user, err := biz.store.FindOneByLoginID(ctx, input.LoginID)
-
 	if err != nil {
 		return app_error.NewCustomError(err, "", errorcode.ErrCannotGetUser)
 	}
@@ -35,10 +36,12 @@ func (biz *registerBusiness) UserRegister(ctx context.Context,
 		return app_error.NewCustomError(nil, "", errorcode.ErrUserHasBeenBlock)
 	}
 
-	err = biz.store.Create(ctx, &domain.CreateUserModel{LoginID: input.LoginID,
+	err = biz.store.Create(ctx, &domain.CreateUserModel{
+		LoginID:   input.LoginID,
 		Password:  input.Password,
 		LastName:  input.LastName,
-		FirstName: input.FirstName},
+		FirstName: input.FirstName,
+	},
 	)
 
 	if err != nil {

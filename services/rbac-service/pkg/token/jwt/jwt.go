@@ -2,8 +2,7 @@ package jwt
 
 import "time"
 
-type jwt struct {
-}
+type jwt struct{}
 
 type Payload struct {
 	userID uint64
