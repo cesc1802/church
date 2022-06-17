@@ -1,0 +1,48 @@
+# The Caddyfile is an easy way to configure your Caddy web server.
+#
+# Unless the file starts with a global options block, the first
+# uncommented line is always the address of your site.
+#
+# To use your own domain name (with automatic HTTPS), first make
+# sure your domain's A/AAAA DNS records are properly pointed to
+# this machine's public IP, then replace ":80" below with your
+# domain name.
+{
+	auto_https off
+	log {
+		level DEBUG
+		output file log.log {
+			roll_size 10MiB
+		}
+	}
+	servers {
+		protocol {
+			allow_h2c
+		}
+	}
+}
+
+http://localhost:8000 {
+	reverse_proxy /api/v1/* localhost:8080
+}
+
+http://localhost:8888 {
+	reverse_proxy * {
+		to localhost:8082
+		transport http {
+			versions h2c 2
+		}
+	}
+}
+
+http://localhost:8889 {
+	reverse_proxy * {
+		to localhost:8081
+		transport http {
+			versions h2c 2
+		}
+	}
+}
+
+# Refer to the Caddy docs for more information:
+# https://caddyserver.com/docs/caddyfile

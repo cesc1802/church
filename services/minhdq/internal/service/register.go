@@ -25,6 +25,7 @@ func GetRegisServer() *RegisterServer {
 }
 
 func (s *RegisterServer) Resgister(ctx context.Context, in *authentication.RegisterModel) (*empty.Empty, error) {
+	fmt.Println("Atleast i'm in here")
 	if in.GetLoginID() == "" {
 		return nil, errors.New("LoginID Can't be null")
 	}
@@ -33,6 +34,6 @@ func (s *RegisterServer) Resgister(ctx context.Context, in *authentication.Regis
 
 	fmt.Println(in.String())
 	err := accounts.Register(in.GetLoginID(), in.GetPassword(), in.GetFirstName(), in.LastName)
-
+	fmt.Println("Here")
 	return &empty.Empty{}, err
 }

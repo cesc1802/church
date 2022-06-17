@@ -1,6 +1,7 @@
 package app
 
 import (
+	"google.golang.org/grpc/reflection"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -32,7 +33,7 @@ func NewRegisterServer() (*grpc.Server, error) {
 	s := grpc.NewServer()
 	regisS := service.GetRegisServer()
 	authentication.RegisterResgisterServer(s, regisS)
-
+	reflection.Register(s)
 	return s, nil
 }
 
@@ -40,6 +41,6 @@ func NewLoginServer() (*grpc.Server, error) {
 	s := grpc.NewServer()
 	loginS := service.GetLoginServer()
 	authentication.RegisterLoginServer(s, loginS)
-
+	reflection.Register(s)
 	return s, nil
 }

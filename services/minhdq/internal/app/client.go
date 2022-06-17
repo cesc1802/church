@@ -2,27 +2,26 @@ package app
 
 import (
 	"context"
-	"log"
-	"time"
-
+	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"log"
+	"time"
 
 	"minhdq/internal/authentication"
 )
 
 func NewAuthenClient(ctx context.Context, raddr string, laddr string) error {
-	conn, err := grpc.Dial(raddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial("127.0.0.1:8888", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("did not connect to register server: %v", err)
 	}
 
 	defer conn.Close()
 	c := authentication.NewResgisterClient(conn)
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(ctx, time.Second*30)
 	defer cancel()
-
+	fmt.Println("start")
 	_, err = c.Resgister(ctx, &authentication.RegisterModel{
 		LoginID:   "1",
 		Password:  "Hello",
@@ -36,7 +35,7 @@ func NewAuthenClient(ctx context.Context, raddr string, laddr string) error {
 
 	log.Printf("Register success")
 
-	conn, err = grpc.Dial(laddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err = grpc.Dial("127.0.0.1:8889", grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
 		log.Fatalf("did not connect to login server: %v", err)

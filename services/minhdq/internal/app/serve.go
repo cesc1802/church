@@ -79,10 +79,8 @@ func ServeRegisServer(ctx context.Context, addr string) (err error) {
 	defer log.Printf("Register server stopped", err)
 
 	s, err := NewRegisterServer()
-
 	ctx, cancel := context.WithCancel(ctx)
 	errChan := make(chan error, 1)
-
 	go func(ctx context.Context, errChan chan error) {
 		lis, err := net.Listen("tcp", addr)
 		if err != nil {
