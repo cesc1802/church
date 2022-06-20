@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"minhdq/internal/authentication"
@@ -23,6 +24,7 @@ func GetLoginServer() *LoginServer {
 }
 
 func (s *LoginServer) Login(ctx context.Context, in *authentication.LoginModel) (*authentication.JWT, error) {
+	fmt.Println(ctx)
 	jwt, err := persistence.Account().Login(in.GetLoginID(), in.GetPassword())
 	if err != nil {
 		return nil, err
