@@ -5,6 +5,17 @@ A project demo grpc and RESTFULL api with caddy reverse proxy
 
 ## Installation
 
+If you want to deploy with docker
+
+```bash
+    cd ./deployments
+    docker-compose up --force-recreate -d 
+    
+    #NOTE: if you docker-compose down it'll not re init the database
+    #incase you want to re init database
+    docker-compose down --volumes
+```
+
 This project required Go 1.18.3 and Caddy
 
 To install Caddy (Ubuntu)

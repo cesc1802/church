@@ -8,41 +8,42 @@
 # this machine's public IP, then replace ":80" below with your
 # domain name.
 {
-	auto_https off
-	log {
-		level DEBUG
-		output file log.log {
-			roll_size 10MiB
-		}
-	}
-	servers {
-		protocol {
-			allow_h2c
-		}
-	}
+        auto_https off
+        log {
+                level DEBUG
+                output file log.log {
+                        roll_size 10MiB
+                }
+        }
+        servers {
+                protocol {
+                        allow_h2c
+                }
+        }
 }
 
 http://localhost:8000 {
-	reverse_proxy /api/v1/* localhost:8080
+        reverse_proxy /api/v1/* httpserver:8080
 }
 
 http://localhost:8888 {
-	reverse_proxy * {
-		to localhost:8082
-		transport http {
-			versions h2c 2
-		}
-	}
+        reverse_proxy * {
+                to grpcserver:8082
+                transport http {
+                        versions h2c 2
+                }
+        }
 }
 
 http://localhost:8889 {
-	reverse_proxy * {
-		to localhost:8081
-		transport http {
-			versions h2c 2
-		}
-	}
+        reverse_proxy * {
+                to grpcserver:8081
+                transport http {
+                        versions h2c 2
+                }
+        }
 }
+
 
 # Refer to the Caddy docs for more information:
 # https://caddyserver.com/docs/caddyfile
