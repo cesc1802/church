@@ -2,9 +2,9 @@ package core
 
 import (
 	"context"
-
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
+	"gopkg.in/olahol/melody.v1"
 )
 
 type HasPrefix interface {
@@ -40,6 +40,7 @@ type GrpcServer interface {
 type HttpServer interface {
 	Runnable
 	AddHandler(HTTPServerHandler)
+	GetMelody() *melody.Melody
 }
 
 type ServiceContext interface {

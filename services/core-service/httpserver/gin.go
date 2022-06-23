@@ -3,6 +3,7 @@ package httpserver
 import (
 	"context"
 	"fmt"
+	"gopkg.in/olahol/melody.v1"
 	"net"
 	"net/http"
 
@@ -31,7 +32,12 @@ type ginService struct {
 	*http.Server
 	handlers []func(engine *gin.Engine)
 	i18n     *i18n.I18n
+	melody   *melody.Melody
 	*ginOpt
+}
+
+func (gs *ginService) GetMelody() *melody.Melody {
+	return gs.melody
 }
 
 func New(c config.Config, i18n *i18n.I18n) *ginService {
@@ -39,6 +45,7 @@ func New(c config.Config, i18n *i18n.I18n) *ginService {
 		isRunning: false,
 		i18n:      i18n,
 		handlers:  []func(*gin.Engine){},
+		melody:    melody.New(),
 		ginOpt: &ginOpt{
 			name: "GIN-SERVICE",
 			port: c.ServerConfig.Port,

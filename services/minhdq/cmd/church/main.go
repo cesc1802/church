@@ -80,6 +80,11 @@ func main() {
 				},
 			},
 		},
+		{
+			Name:   "chat",
+			Usage:  "Chatting  server",
+			Action: ChattingDemo,
+		},
 	}
 
 	app.Before = func(c *cli.Context) error {
@@ -133,6 +138,10 @@ func Serve(c *cli.Context) error {
 	}
 
 	return app.Serve(ctx, c.String("addr"))
+}
+
+func ChattingDemo(c *cli.Context) error {
+	return app.GetChatCommand().Execute()
 }
 
 func AuthenServer(c *cli.Context) error {
