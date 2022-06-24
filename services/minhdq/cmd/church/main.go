@@ -141,6 +141,10 @@ func Serve(c *cli.Context) error {
 }
 
 func ChattingDemo(c *cli.Context) error {
+	err := persistence.LoadRoomChatRepoRespositoryMem(c.Context)
+	if err != nil {
+		return err
+	}
 	return app.GetChatCommand().Execute()
 }
 

@@ -1,6 +1,8 @@
 package app
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc/reflection"
@@ -52,14 +54,114 @@ func NewLoginServer() (*grpc.Server, error) {
 
 func ChatRouter(sc core.ServiceContext, m *melody.Melody) func(engine *gin.Engine) {
 	return func(engine *gin.Engine) {
+
+		engine.GET("/room", func(c *gin.Context) {
+			data, err := service.RoomChatGetAll(c.Copy())
+			if err != nil {
+				c.Writer.Write([]byte(err.Error()))
+				return
+			}
+			pl, _ := json.Marshal(data)
+			c.Writer.Write(pl)
+		})
+
+		engine.GET("/room/:room", func(c *gin.Context) {
+			room := c.Param("room")
+			cmd := service.RoomChatIDCommand{ID: room}
+			d, err := cmd.RoomChatGetOne(c.Copy())
+			if err != nil {
+				c.Writer.Write([]byte(err.Error()))
+				return
+			}
+			pl, _ := json.Marshal(d)
+			c.Writer.Write(pl)
+		})
+
+		engine.GET("/history/:room", func(c *gin.Context) {
+			room := c.Param("room")
+			cmd := service.RoomChatIDCommand{ID: room}
+			d, err := cmd.RoomChatGetHistory(c.Copy())
+			if err != nil {
+				c.Writer.Write([]byte(err.Error()))
+				return
+			}
+			pl, _ := json.Marshal(d)
+			c.Writer.Write(pl)
+		})
+
+		engine.POST("/room/:room", func(c *gin.Context) {
+			room := c.Param("room")
+			cmd := service.RoomChatIDCommand{ID: room}
+			err := cmd.NewRoom(c.Copy())
+			if err != nil {
+				c.Writer.Write([]byte(err.Error()))
+				return
+			}
+			c.Writer.Write([]byte("Created room"))
+		})
+
 		engine.GET("/", func(c *gin.Context) {
 			http.ServeFile(c.Writer, c.Request, "/home/minhdq/GolandProjects/church/services/minhdq/public/index.html")
 		})
 
-		engine.GET("/ws/:room", func(c *gin.Context) {
+		engine.GET("/ws/:room/:name", func(c *gin.Context) {
+			secretKey := c.GetHeader("Authorization")
+			if secretKey != "123" {
+				c.Writer.WriteHeader(http.StatusUnauthorized)
+				c.Writer.Write([]byte("Wrong secret code"))
+				return
+			}
 			room := c.Param("room")
-			fmt.Println("Room " + room + " has now connections")
-			m.HandleRequestWithKeys(c.Writer, c.Request, map[string]interface{}{"room": room})
+			name := c.Param("name")
+
+			cmd := service.RoomChatIDCommand{ID: room}
+
+			_, err := cmd.RoomChatGetOne(c.Copy())
+
+			if err != nil {
+				c.Writer.WriteHeader(400)
+				c.Writer.Write([]byte(err.Error()))
+				return
+			}
+			fmt.Println("User " + name + " connected to room " + room)
+			m.HandleRequestWithKeys(c.Writer, c.Request, map[string]interface{}{"room": room, "name": name})
+		})
+
+		m.HandleConnect(func(session *melody.Session) {
+			room, d := session.Get("room")
+			if !d {
+				session.Close()
+				return
+			}
+			name, d := session.Get("name")
+			if !d {
+				session.Close()
+				return
+			}
+			cmd := service.RoomChatIDPayloadCommand{
+				ID:      room.(string),
+				Payload: name.(string),
+			}
+
+			cmd.RoomChatAddUser(context.Background())
+		})
+
+		m.HandleClose(func(session *melody.Session, i int, s string) error {
+			room, d := session.Get("room")
+			if !d {
+				return nil
+			}
+			name, d := session.Get("name")
+			if !d {
+				session.Close()
+				return nil
+			}
+			cmd := service.RoomChatIDPayloadCommand{
+				ID:      room.(string),
+				Payload: name.(string),
+			}
+
+			return cmd.RoomChatDeleteUser(context.Background())
 		})
 
 		m.HandleMessage(func(s *melody.Session, msg []byte) {
@@ -72,6 +174,16 @@ func ChatRouter(sc core.ServiceContext, m *melody.Melody) func(engine *gin.Engin
 				sr, d := session.Get("room")
 				if d {
 					if sr == room {
+						name, d := session.Get("name")
+						if !d {
+							return false
+						}
+						cmd := service.RoomChatIDPayloadCommand{
+							ID:      sr.(string),
+							Payload: fmt.Sprintf("%s said: %s", name.(string), string(msg)),
+						}
+
+						cmd.RoomChatAddHistory(context.Background())
 						return true
 					}
 				}
