@@ -53,6 +53,9 @@ func NewLoginServer() (*grpc.Server, error) {
 }
 
 func ChatRouter(sc core.ServiceContext, m *melody.Melody) func(engine *gin.Engine) {
+	m.Config.PingPeriod = 5 * time.Second
+	m.Config.PongWait = 5 * time.Second
+	m.Config.WriteWait = 5 * time.Second
 	return func(engine *gin.Engine) {
 
 		engine.GET("/room", func(c *gin.Context) {
@@ -105,12 +108,12 @@ func ChatRouter(sc core.ServiceContext, m *melody.Melody) func(engine *gin.Engin
 		})
 
 		engine.GET("/ws/:room/:name", func(c *gin.Context) {
-			secretKey := c.GetHeader("Authorization")
-			if secretKey != "123" {
-				c.Writer.WriteHeader(http.StatusUnauthorized)
-				c.Writer.Write([]byte("Wrong secret code"))
-				return
-			}
+			//secretKey := c.GetHeader("Authorization")
+			//if secretKey != "123" {
+			//	c.Writer.WriteHeader(http.StatusUnauthorized)
+			//	c.Writer.Write([]byte("Wrong secret code"))
+			//	return
+			//}
 			room := c.Param("room")
 			name := c.Param("name")
 
@@ -146,6 +149,29 @@ func ChatRouter(sc core.ServiceContext, m *melody.Melody) func(engine *gin.Engin
 			cmd.RoomChatAddUser(context.Background())
 		})
 
+		m.HandleError(func(session *melody.Session, err error) {
+			if err != nil {
+				room, d := session.Get("room")
+				if !d {
+					return
+				}
+				name, d := session.Get("name")
+				if !d {
+					session.Close()
+					return
+				}
+				cmd := service.RoomChatIDPayloadCommand{
+					ID:      room.(string),
+					Payload: name.(string),
+				}
+
+				fmt.Println("closing the connection for " + name.(string) + " in room " + room.(string))
+
+				cmd.RoomChatDeleteUser(context.Background())
+				return
+			}
+		})
+
 		m.HandleClose(func(session *melody.Session, i int, s string) error {
 			room, d := session.Get("room")
 			if !d {
@@ -161,7 +187,15 @@ func ChatRouter(sc core.ServiceContext, m *melody.Melody) func(engine *gin.Engin
 				Payload: name.(string),
 			}
 
-			return cmd.RoomChatDeleteUser(context.Background())
+			fmt.Println("closing the connection for " + name.(string) + " in room " + room.(string))
+
+			err := cmd.RoomChatDeleteUser(context.Background())
+
+			if err != nil {
+				return err
+			}
+
+			return session.Close()
 		})
 
 		m.HandleMessage(func(s *melody.Session, msg []byte) {

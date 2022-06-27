@@ -20,7 +20,7 @@ var ChatCMD = &cobra.Command{
 			SQLDBConfigs: nil,
 			NoSQLConfigs: nil,
 			ServerConfig: config.ServerConfig{
-				Host: "localhost",
+				Host: "0.0.0.0",
 				Port: "5000",
 			},
 			LoginServerConfig:    config.ServerConfig{},

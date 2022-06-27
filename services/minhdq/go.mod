@@ -21,3 +21,5 @@ require (
 )
 
 replace services.core-service v0.0.1 => ../core-service
+
+//replace gopkg.in/olahol/melody.v1 v1.0.0-20170518105555-d52139073376 => /home/minhdq/go/src/gopkg.in/olahol/melody.v1
