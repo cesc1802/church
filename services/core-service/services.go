@@ -23,6 +23,7 @@ type AppService struct {
 	httpserver   HttpServer
 	grpcServer   []GrpcServer
 	subServices  []Runnable
+	broker       Broker
 	initServices map[string]PrefixRunnable
 }
 
@@ -41,6 +42,12 @@ func WithGrpcServer(server GrpcServer) AppServiceOption {
 func WithName(name string) AppServiceOption {
 	return func(app *AppService) {
 		app.name = name
+	}
+}
+
+func WithBroker(broker Broker) AppServiceOption {
+	return func(app *AppService) {
+		app.broker = broker
 	}
 }
 
@@ -78,6 +85,10 @@ func NewAppService(opts ...AppServiceOption) *AppService {
 	}
 	if sv.httpserver != nil {
 		sv.subServices = append(sv.subServices, sv.httpserver)
+	}
+
+	if sv.broker != nil {
+		sv.subServices = append(sv.subServices, sv.broker)
 	}
 
 	if len(sv.grpcServer) != 0 {
@@ -144,6 +155,10 @@ func (s *AppService) GrpcServer(prefix string) GrpcServer {
 		}
 	}
 	return nil
+}
+
+func (s *AppService) Broker() Broker {
+	return s.broker
 }
 
 func (s *AppService) HttpServer() HttpServer {

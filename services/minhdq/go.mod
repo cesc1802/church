@@ -3,7 +3,9 @@ module minhdq
 go 1.13
 
 require (
+	cloud.google.com/go/kms v1.4.0 // indirect
 	github.com/Masterminds/squirrel v1.5.3
+	github.com/RichardKnop/machinery v1.10.6
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-chi/chi/v5 v5.0.7

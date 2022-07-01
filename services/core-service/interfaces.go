@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"github.com/RichardKnop/machinery/v1"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"gopkg.in/olahol/melody.v1"
@@ -37,6 +38,13 @@ type GrpcServer interface {
 	AddgRPCServer(s *grpc.Server)
 }
 
+type Broker interface {
+	Runnable
+	GetServer() *machinery.Server
+	SetTasks(task map[string]interface{})
+	NewWorker(consumerTag string, concurency int) *machinery.Worker
+}
+
 type HttpServer interface {
 	Runnable
 	AddHandler(HTTPServerHandler)
@@ -55,6 +63,7 @@ type Service interface {
 	HttpServer() HttpServer
 	GrpcServers() []GrpcServer
 	GrpcServer(prefix string) GrpcServer
+	Broker() Broker
 	Run() error
 	Stop() error
 }

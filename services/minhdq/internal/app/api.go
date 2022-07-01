@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/RichardKnop/machinery/v1/tasks"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc/reflection"
 	"gopkg.in/olahol/melody.v1"
+	"log"
 	"net/http"
 	core "services.core-service"
 	"time"
@@ -54,8 +56,42 @@ func NewLoginServer() (*grpc.Server, error) {
 
 func ChatRouter(sc core.ServiceContext, m *melody.Melody) func(engine *gin.Engine) {
 	m.Config.PingPeriod = 5 * time.Second
-	m.Config.PongWait = 5 * time.Second
+	m.Config.PongWait = 10 * time.Second
 	m.Config.WriteWait = 5 * time.Second
+	f := func(room string, message string) error {
+		msg := []byte(message)
+		m.BroadcastFilter(msg, func(session *melody.Session) bool {
+			sr, d := session.Get("room")
+			sr = sr.(string)
+			if d {
+				if sr == room {
+					name, d := session.Get("name")
+					if !d {
+						return false
+					}
+					cmd := service.RoomChatIDPayloadCommand{
+						ID:      sr.(string),
+						Payload: fmt.Sprintf("%s said: %s", name.(string), string(msg)),
+					}
+
+					cmd.RoomChatAddHistory(context.Background())
+					return true
+				}
+			}
+			return false
+		})
+		return nil
+	}
+	server := GetServer()
+
+	err := server.RegisterTask("talk", f)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	worker := server.NewWorker("Socket_Chat", 1)
+
+	go worker.Launch()
 	return func(engine *gin.Engine) {
 
 		engine.GET("/room", func(c *gin.Context) {
@@ -164,10 +200,10 @@ func ChatRouter(sc core.ServiceContext, m *melody.Melody) func(engine *gin.Engin
 					ID:      room.(string),
 					Payload: name.(string),
 				}
-
 				fmt.Println("closing the connection for " + name.(string) + " in room " + room.(string))
 
 				cmd.RoomChatDeleteUser(context.Background())
+				session.Close()
 				return
 			}
 		})
@@ -203,26 +239,22 @@ func ChatRouter(sc core.ServiceContext, m *melody.Melody) func(engine *gin.Engin
 			if !d {
 				return
 			}
-
-			m.BroadcastFilter(msg, func(session *melody.Session) bool {
-				sr, d := session.Get("room")
-				if d {
-					if sr == room {
-						name, d := session.Get("name")
-						if !d {
-							return false
-						}
-						cmd := service.RoomChatIDPayloadCommand{
-							ID:      sr.(string),
-							Payload: fmt.Sprintf("%s said: %s", name.(string), string(msg)),
-						}
-
-						cmd.RoomChatAddHistory(context.Background())
-						return true
-					}
-				}
-				return false
-			})
+			message := string(msg)
+			room = room.(string)
+			task := tasks.Signature{
+				Name: "talk",
+				Args: []tasks.Arg{
+					{
+						Type:  "string",
+						Value: room,
+					},
+					{
+						Type:  "string",
+						Value: message,
+					},
+				},
+			}
+			server.SendTask(&task)
 		})
 	}
 }

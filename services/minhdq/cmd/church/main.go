@@ -145,6 +145,7 @@ func ChattingDemo(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	app.NewServer()
 	return app.GetChatCommand().Execute()
 }
 

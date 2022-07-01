@@ -3,6 +3,7 @@ module services.core-service
 go 1.16
 
 require (
+	github.com/RichardKnop/machinery v1.10.6 // indirect
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/gorilla/websocket v1.5.0 // indirect

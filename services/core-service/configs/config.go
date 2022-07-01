@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	broker "github.com/RichardKnop/machinery/v1/config"
 	"os"
 	"path/filepath"
 	"strings"
@@ -14,6 +15,7 @@ const DefaultENV = "dev"
 type Config struct {
 	Env string
 
+	Broker               broker.Config `mapstructure:"broker"`
 	RedisConfig          `mapstructure:"redis"`
 	SQLDBConfigs         `mapstructure:"databases"`
 	NoSQLConfigs         `mapstructure:"nosqldatabases"`
