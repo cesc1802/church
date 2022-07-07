@@ -14,6 +14,7 @@ require (
 	github.com/jackc/pgx/v4 v4.16.1
 	github.com/joho/godotenv v1.4.0
 	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/ory/fosite v0.42.2 // indirect
 	github.com/spf13/cobra v1.5.0
 	github.com/urfave/cli/v2 v2.8.1
 	google.golang.org/grpc v1.47.0
