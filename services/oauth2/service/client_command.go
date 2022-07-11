@@ -7,16 +7,16 @@ import (
 )
 
 func FindALlClients(ctx context.Context) (clients []*model.Client, err error) {
-	return
+	return persistence.Client().FindAll(ctx)
 }
 
 type ClientCommand struct {
 	ID             string   `json:"id"`
-	Secret         []byte   `json:"client_secret,omitempty"`
-	RotatedSecrets [][]byte `json:"rotated_secrets,omitempty"`
-	RedirectURIs   []string `json:"redirect_uris"`
-	GrantTypes     []string `json:"grant_types"`
-	ResponseTypes  []string `json:"response_types"`
+	Secret         []byte   `json:"clientSecret,omitempty"`
+	RotatedSecrets [][]byte `json:"rotatedSecrets,omitempty"`
+	RedirectURIs   []string `json:"RedirectURIs"`
+	GrantTypes     []string `json:"GrantTypes"`
+	ResponseTypes  []string `json:"ResponseTypes"`
 	Scopes         []string `json:"scopes"`
 	Audience       []string `json:"audience"`
 	Public         bool     `json:"public"`

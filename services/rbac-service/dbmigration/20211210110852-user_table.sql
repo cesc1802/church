@@ -61,12 +61,12 @@ CREATE TABLE IF NOT EXISTS clients
     Secret
     VARCHAR
 (
-    50
+    150
 ) NOT NULL,
-    RedirectURIs text[],
-    GrantTypes text[],
-    ResponseTypes text[],
-    Scopes text[],
-    Audience text[],
+    RedirectURIs VARCHAR (150) ARRAY,
+    GrantTypes VARCHAR (150) ARRAY,
+    ResponseTypes VARCHAR (150) ARRAY,
+    Scopes VARCHAR (150) ARRAY,
+    Audience VARCHAR (150) ARRAY,
     Public boolean
     );

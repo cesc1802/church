@@ -37,11 +37,13 @@ func AuthEndpoint(rw http.ResponseWriter, req *http.Request) {
 				<input type="text" name="username" /> <small>try peter</small><br>
 				<input type="submit">
 			</form>
+		<script>alert(${{this}})</script>
 		`, requestedScopes)))
 		return
 	}
 
 	for _, scope := range req.PostForm["scopes"] {
+
 		ar.GrantScope(scope)
 	}
 

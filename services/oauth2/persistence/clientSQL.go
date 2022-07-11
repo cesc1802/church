@@ -5,6 +5,7 @@ import (
 	"errors"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"log"
 	"oauth/model"
 )
 
@@ -51,14 +52,15 @@ func (c clientPSQL) FindOneByID(ctx context.Context, id string) (client *model.C
 	builder := psql.Select("id", "Secret", "RedirectURIs", "GrantTypes", "ResponseTypes", "Scopes", "Audience", "Public").From(clientTable).Where(sq.Eq{"id": id})
 
 	query, args, err := builder.ToSql()
+
 	if err != nil {
 		return
 	}
 
 	row := c.conn.QueryRow(ctx, query, args...)
 	var secretString string
+	client = &model.Client{}
 	err = row.Scan(&client.ID, &secretString, &client.RedirectURIs, &client.GrantTypes, &client.ResponseTypes, &client.Scopes, &client.Audience, &client.Public)
-
 	client.Secret = []byte(secretString)
 
 	if err != nil {
@@ -79,7 +81,10 @@ func (c clientPSQL) CreateByID(ctx context.Context, id string, redirectURIs []st
 		return
 	}
 
-	_, err = c.conn.Query(ctx, query, args...)
+	_, err = c.conn.Exec(ctx, query, args...)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	return
 }
 

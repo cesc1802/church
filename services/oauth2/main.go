@@ -112,7 +112,7 @@ func Serve(c *cli.Context) error {
 		return err
 	}
 
-	secret := []byte("why_cant_this_be_empty")
+	secret := []byte("some-cool-secret-that-is-32bytes")
 
 	configOauth := &fosite.Config{
 		AccessTokenLifespan: time.Minute * 30,

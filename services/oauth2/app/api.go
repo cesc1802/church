@@ -14,7 +14,8 @@ func NewChiHandeler() *chi.Mux {
 		r.Use(middleware.DefaultLogger)
 		r.Use(middleware.Timeout(30 * time.Second))
 
-		r.Get("/auth", AuthEndpoint)
+		r.HandleFunc("/auth", AuthEndpoint)
+		r.HandleFunc("/token", tokenEndpoint)
 
 		r.Route("/user", func(r chi.Router) {
 			r.Get("/", UserListAll)

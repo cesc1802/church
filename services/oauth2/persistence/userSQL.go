@@ -88,7 +88,7 @@ func (u *userPSQL) CreateUser(ctx context.Context, username string, password str
 		return
 	}
 
-	_, err = u.conn.Query(ctx, query, args...)
+	_, err = u.conn.Exec(ctx, query, args...)
 	return
 }
 
