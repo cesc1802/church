@@ -1,7 +1,7 @@
 package domain
 
 type CreateUserModel struct {
-	UserID   string `gorm:"column:login_id"`
+	UserID   string `gorm:"column:userid"`
 	Password string `gorm:"column:password"`
 }
 

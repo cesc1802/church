@@ -5,7 +5,7 @@ import "shard/common"
 type UserModel struct {
 	common.BaseModel
 	ID       int64  `gorm:"primarykey"`
-	UserID   string `gorm:"column:login_id"`
+	UserID   string `gorm:"column:userid"`
 	Password string `gorm:"column:password"`
 }
 

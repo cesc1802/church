@@ -1,7 +1,7 @@
 package domain
 
 type VerifyUserModel struct {
-	LoginID  string `gorm:"column:login_id"`
+	LoginID  string `gorm:"column:userid"`
 	Password string `gorm:"column:password"`
 }
 

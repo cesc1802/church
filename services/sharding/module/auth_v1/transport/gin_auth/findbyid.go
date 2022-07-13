@@ -11,14 +11,13 @@ import (
 	"shard/module/user_v1/storage"
 )
 
-func List(sc core.ServiceContext) gin.HandlerFunc {
+func FindByID(sc core.ServiceContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
-
 		db := sc.MustGet(constants.KeyMainDb).(*gorm.DB)
-
+		name := c.Param("userID")
 		store := storage.NewPostgresUserStorage(db)
 		biz := business.NewRegisterBusiness(store)
-		data, err := biz.ListAll(c.Request.Context())
+		data, err := biz.FindOneByLoginID(c.Request.Context(), name)
 		if err != nil {
 			app_error.MustError(err)
 		}

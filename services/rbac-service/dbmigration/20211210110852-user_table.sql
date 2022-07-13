@@ -1,3 +1,20 @@
+
+CREATE TABLE IF NOT EXISTS users
+(
+    id
+    BIGINT
+    PRIMARY
+    KEY,
+    UserID
+    VARCHAR
+(
+    50
+),
+    PASSWORD VARCHAR
+(
+    50
+)
+    );
 -- +migrate Up
 CREATE TABLE IF NOT EXISTS users
 (
