@@ -1,12 +1,17 @@
 package app
 
 import (
+	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"oauth/service"
 )
 
 func tokenEndpoint(rw http.ResponseWriter, req *http.Request) {
+	fmt.Println(req.Header)
+	data, _ := io.ReadAll(req.Body)
+	fmt.Println(string(data))
 	ctx := req.Context()
 
 	oauth2 := service.GetProvider()
