@@ -45,6 +45,20 @@ type Broker interface {
 	NewWorker(consumerTag string, concurency int) *machinery.Worker
 }
 
+type BrokerServer interface {
+	Runnable
+	SetTasks(task map[string]interface{})
+}
+
+type BrokerWoker interface {
+	Runnable
+	BrokerServer
+}
+
+type Worker interface {
+	Runnable
+}
+
 type HttpServer interface {
 	Runnable
 	AddHandler(HTTPServerHandler)
