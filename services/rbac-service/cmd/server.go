@@ -37,7 +37,6 @@ var serverCmd = &cobra.Command{
 			rbacService.Version())
 
 		rbacService.HttpServer().AddHandler(handlers.EndUserRoutes(rbacService))
-
 		if err := rbacService.Run(); err != nil {
 			serviceLogger.Fatal("Run RBAC service: %v", err)
 		}

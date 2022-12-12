@@ -2,13 +2,14 @@ package core
 
 import (
 	"context"
-	"github.com/pkg/errors"
-	"golang.org/x/sync/errgroup"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/pkg/errors"
+	"golang.org/x/sync/errgroup"
 )
 
 type AppServiceOption func(service *AppService)
@@ -20,7 +21,9 @@ type AppService struct {
 	cancel       func()
 	signals      []os.Signal
 	httpserver   HttpServer
+	grpcServer   []GrpcServer
 	subServices  []Runnable
+	broker       Broker
 	initServices map[string]PrefixRunnable
 }
 
@@ -30,9 +33,21 @@ func WithVersion(version string) AppServiceOption {
 	}
 }
 
+func WithGrpcServer(server GrpcServer) AppServiceOption {
+	return func(app *AppService) {
+		app.grpcServer = append(app.grpcServer, server)
+	}
+}
+
 func WithName(name string) AppServiceOption {
 	return func(app *AppService) {
 		app.name = name
+	}
+}
+
+func WithBroker(broker Broker) AppServiceOption {
+	return func(app *AppService) {
+		app.broker = broker
 	}
 }
 
@@ -70,6 +85,16 @@ func NewAppService(opts ...AppServiceOption) *AppService {
 	}
 	if sv.httpserver != nil {
 		sv.subServices = append(sv.subServices, sv.httpserver)
+	}
+
+	if sv.broker != nil {
+		sv.subServices = append(sv.subServices, sv.broker)
+	}
+
+	if len(sv.grpcServer) != 0 {
+		for _, grS := range sv.grpcServer {
+			sv.subServices = append(sv.subServices, grS)
+		}
 	}
 
 	return sv
@@ -119,6 +144,23 @@ func (s *AppService) Stop() error {
 	return nil
 }
 
+func (s *AppService) GrpcServers() []GrpcServer {
+	return s.grpcServer
+}
+
+func (s *AppService) GrpcServer(prefix string) GrpcServer {
+	for _, s := range s.grpcServer {
+		if s.GetPrefix() == prefix {
+			return s
+		}
+	}
+	return nil
+}
+
+func (s *AppService) Broker() Broker {
+	return s.broker
+}
+
 func (s *AppService) HttpServer() HttpServer {
 	return s.httpserver
 }
@@ -142,8 +184,7 @@ func (s *AppService) Version() string {
 	return s.version
 }
 
-type appServiceKey struct {
-}
+type appServiceKey struct{}
 
 func NewContext(ctx context.Context, ra Runnable) context.Context {
 	return context.WithValue(ctx, appServiceKey{}, ra)

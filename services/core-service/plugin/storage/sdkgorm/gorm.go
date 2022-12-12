@@ -3,14 +3,16 @@ package sdkgorm
 import (
 	"context"
 	"errors"
-	"gorm.io/gorm"
 	"math"
-	config "services.core-service/configs"
-	"services.core-service/logger"
-	"services.core-service/plugin/storage/sdkgorm/gormdialects"
 	"strings"
 	"sync"
 	"time"
+
+	"gorm.io/gorm"
+
+	config "services.core-service/configs"
+	"services.core-service/logger"
+	"services.core-service/plugin/storage/sdkgorm/gormdialects"
 )
 
 type GormDBType int
@@ -28,22 +30,30 @@ const (
 )
 
 type gormDB struct {
-	prefix    string
-	name      string
-	db        *gorm.DB
-	isRunning bool
-	once      *sync.Once
-	cfg       *config.SQLDBConfig
+	prefix       string
+	name         string
+	db           *gorm.DB
+	isRunning    bool
+	once         *sync.Once
+	cfg          *config.SQLDBConfig
+	plugins      []gorm.Plugin
+	migrateTable []interface{}
 }
 
-func NewGormDB(name, prefix string, cfg *config.SQLDBConfig) *gormDB {
+func NewGormDB(name, prefix string, cfg *config.SQLDBConfig, plugins ...gorm.Plugin) *gormDB {
 	return &gormDB{
 		name:      name,
 		prefix:    prefix,
 		isRunning: false,
 		once:      new(sync.Once),
 		cfg:       cfg,
+		plugins:   append([]gorm.Plugin{}, plugins...),
 	}
+}
+
+func (gdb *gormDB) SetMigration(model ...interface{}) *gormDB {
+	gdb.migrateTable = append(gdb.migrateTable, model...)
+	return gdb
 }
 
 func (gdb *gormDB) GetPrefix() string {
@@ -114,13 +124,13 @@ func (gdb *gormDB) Get() interface{} {
 		return nil
 	}
 
-	//TODO: need setup logger
-	//gdb.db.Logger =
+	// TODO: need setup logger
+	// gdb.db.Logger =
 
 	return gdb.db
 }
-func (gdb *gormDB) getConnWithRetry(dbType GormDBType, retry int) (*gorm.DB, error) {
 
+func (gdb *gormDB) getConnWithRetry(dbType GormDBType, retry int) (*gorm.DB, error) {
 	db, err := gdb.getDBConn(dbType)
 
 	if err != nil {
@@ -133,12 +143,12 @@ func (gdb *gormDB) getConnWithRetry(dbType GormDBType, retry int) (*gorm.DB, err
 				break
 			}
 		}
-
 	} else {
 		go gdb.reconnectIfNeed()
 	}
 	return db, err
 }
+
 func (gdb *gormDB) Configure() error {
 	if gdb.isRunning {
 		return nil
@@ -155,6 +165,16 @@ func (gdb *gormDB) Configure() error {
 		return nil
 	}
 
+	err = gdb.setPlugin(context.Background())
+	if err != nil {
+		return nil
+	}
+
+	err = gdb.migrate()
+	if err != nil {
+		return nil
+	}
+
 	gdb.isRunning = true
 	return nil
 }
@@ -163,6 +183,33 @@ func (gdb *gormDB) Start() error {
 	if err := gdb.Configure(); err != nil {
 		return nil
 	}
+	return nil
+}
+
+func (gdb *gormDB) migrate() error {
+	if gdb.db == nil {
+		return errors.New("gorm database is not initialized")
+	}
+	for _, model := range gdb.migrateTable {
+		err := gdb.db.Migrator().AutoMigrate(model)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (gdb *gormDB) setPlugin(ctx context.Context) error {
+	if gdb.db == nil {
+		return errors.New("gorm database is not initialized")
+	}
+	for _, plugin := range gdb.plugins {
+		err := gdb.db.Use(plugin)
+		if err != nil {
+			return errors.New("gorm plugin is not supported")
+		}
+	}
+
 	return nil
 }
 

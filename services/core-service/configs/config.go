@@ -2,10 +2,12 @@ package config
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
+	broker "github.com/RichardKnop/machinery/v1/config"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/spf13/viper"
 )
 
 const DefaultENV = "dev"
@@ -13,14 +15,17 @@ const DefaultENV = "dev"
 type Config struct {
 	Env string
 
-	RedisConfig      `mapstructure:"redis"`
-	SQLDBConfigs     `mapstructure:"databases"`
-	NoSQLConfigs     `mapstructure:"nosqldatabases"`
-	ServerConfig     `mapstructure:"server"`
-	HttpClientConfig `mapstructure:"client"`
-	I18nConfig       `mapstructure:"i18n"`
-	CORSConfig       `mapstructure:"cors"`
-	LogConfig        `mapstructure:"log"`
+	Broker               broker.Config `mapstructure:"broker"`
+	RedisConfig          `mapstructure:"redis"`
+	SQLDBConfigs         `mapstructure:"databases"`
+	NoSQLConfigs         `mapstructure:"nosqldatabases"`
+	ServerConfig         `mapstructure:"server"`
+	LoginServerConfig    ServerConfig `mapstructure:"loginserver"`
+	RegisterServerConfig ServerConfig `mapstructure:"registerserver"`
+	HttpClientConfig     `mapstructure:"client"`
+	I18nConfig           `mapstructure:"i18n"`
+	CORSConfig           `mapstructure:"cors"`
+	LogConfig            `mapstructure:"log"`
 }
 
 // LoadConfig reads configuration from file or environment variables.
@@ -44,11 +49,11 @@ func LoadConfig() (c Config, err error) {
 		return
 	}
 
-	// load config from config directory
+	// load configs from configs directory
 	if path == "/" {
-		viper.AddConfigPath("/config")
+		viper.AddConfigPath("/configs")
 	} else {
-		viper.AddConfigPath(fmt.Sprintf("%v/config", path))
+		viper.AddConfigPath(fmt.Sprintf("%v/configs", path))
 	}
 	viper.SetConfigName(fmt.Sprintf("app-%v", strings.ToLower(env)))
 	viper.SetConfigType("yaml")

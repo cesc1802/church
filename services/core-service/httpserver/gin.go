@@ -3,12 +3,15 @@ package httpserver
 import (
 	"context"
 	"fmt"
+	"gopkg.in/olahol/melody.v1"
+	"net"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
-	"net"
-	"net/http"
+
 	config "services.core-service/configs"
 	"services.core-service/httpserver/middleware"
 	"services.core-service/i18n"
@@ -29,7 +32,12 @@ type ginService struct {
 	*http.Server
 	handlers []func(engine *gin.Engine)
 	i18n     *i18n.I18n
+	melody   *melody.Melody
 	*ginOpt
+}
+
+func (gs *ginService) GetMelody() *melody.Melody {
+	return gs.melody
 }
 
 func New(c config.Config, i18n *i18n.I18n) *ginService {
@@ -37,6 +45,7 @@ func New(c config.Config, i18n *i18n.I18n) *ginService {
 		isRunning: false,
 		i18n:      i18n,
 		handlers:  []func(*gin.Engine){},
+		melody:    melody.New(),
 		ginOpt: &ginOpt{
 			name: "GIN-SERVICE",
 			port: c.ServerConfig.Port,
@@ -64,12 +73,11 @@ func (gs *ginService) Configure() error {
 	gs.engine.RedirectFixedPath = true
 
 	// Recovery
-	//TODO: you can add more middleware here
+	// TODO: you can add more middleware here
 	gs.engine.Use(middleware.Recovery(gs.i18n))
 
 	gs.isRunning = true
 	return nil
-
 }
 
 func (gs *ginService) Name() string {
@@ -108,8 +116,8 @@ func (gs *ginService) Start() error {
 }
 
 func (gs *ginService) Stop(ctx context.Context) error {
-	//ctx, cancelFn := context.WithTimeout(context.Background(), time.Second*10)
-	//defer cancelFn()
+	// ctx, cancelFn := context.WithTimeout(context.Background(), time.Second*10)
+	// defer cancelFn()
 
 	if gs.Server != nil {
 		logger.Info("server shutting down....")

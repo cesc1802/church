@@ -1,0 +1,49 @@
+version: "3.7"
+
+services:
+
+  caddy:
+    image: caddy:latest
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+      - "8889:8889"
+      - "8888:8888"
+      - "2019:2019"
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+    networks:
+      - server
+
+  grpcserver:
+      build: ../services/minhdq/.
+      restart: unless-stopped
+      command: "--env /app/configs/.env authen"
+      volumes:
+        - ../services/minhdq/configs/:/app/configs/
+      networks:
+        - server
+
+  httpserver:
+      build: ../services/minhdq/.
+      restart: unless-stopped
+      command: "--env /app/configs/.env serve"
+      volumes:
+        - ../services/minhdq/configs/:/app/configs/
+      networks:
+        - server
+      depends_on:
+        - db
+
+  db:
+      build: ./Dockerfile
+      restart: always
+      networks:
+        - server
+
+volumes:
+  caddy_data:
+    external: true
+networks:
+  server:
+    driver: bridge

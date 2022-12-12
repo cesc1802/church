@@ -1,16 +1,17 @@
-package swagger
+package handlers
 
 import (
 	"encoding/json"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+
 	"services.core-service/app_error"
 
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
 func NewOpenAPI3() openapi3.T {
-
 	swagger := openapi3.T{
 		OpenAPI: "3.0.0",
 		Info: &openapi3.Info{

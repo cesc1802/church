@@ -2,7 +2,10 @@ package core
 
 import (
 	"context"
+	"github.com/RichardKnop/machinery/v1"
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc"
+	"gopkg.in/olahol/melody.v1"
 )
 
 type HasPrefix interface {
@@ -21,15 +24,45 @@ type Runnable interface {
 	Start() error
 	Stop(ctx context.Context) error
 }
+
 type PrefixRunnable interface {
 	HasPrefix
 	Runnable
 }
 
 type HTTPServerHandler = func(*gin.Engine)
+
+type GrpcServer interface {
+	HasPrefix
+	Runnable
+	AddgRPCServer(s *grpc.Server)
+}
+
+type Broker interface {
+	Runnable
+	GetServer() *machinery.Server
+	SetTasks(task map[string]interface{})
+	NewWorker(consumerTag string, concurency int) *machinery.Worker
+}
+
+type BrokerServer interface {
+	Runnable
+	SetTasks(task map[string]interface{})
+}
+
+type BrokerWoker interface {
+	Runnable
+	BrokerServer
+}
+
+type Worker interface {
+	Runnable
+}
+
 type HttpServer interface {
 	Runnable
 	AddHandler(HTTPServerHandler)
+	GetMelody() *melody.Melody
 }
 
 type ServiceContext interface {
@@ -42,6 +75,9 @@ type Service interface {
 	Name() string
 	Version() string
 	HttpServer() HttpServer
+	GrpcServers() []GrpcServer
+	GrpcServer(prefix string) GrpcServer
+	Broker() Broker
 	Run() error
 	Stop() error
 }
